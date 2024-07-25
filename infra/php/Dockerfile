@@ -5,6 +5,10 @@ ENV COMPOSER_ALLOW_SUPERUSER=1 \
 
 COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
 
+# Node.js のリポジトリを追加して、Node.js と npm をインストール
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs
+
 RUN apt-get update && \
   apt-get -y install --no-install-recommends git unzip libzip-dev libicu-dev libonig-dev && \
   apt-get clean && \
