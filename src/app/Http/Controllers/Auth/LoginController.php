@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;  // 追加
+use App\Models\User;  // 追加
+use Illuminate\Support\Facades\Auth;  // 追加
+
 
 class LoginController extends Controller
 {
@@ -38,8 +43,24 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    protected function loggedOut()
+     /**
+     * @param Request
+     * @param User $user
+     * @return User
+     */
+    protected function authenticated(Request $request, $user)
     {
-       return redirect(route('login'));
+        return $user;
+    }
+
+    /**
+     * @param Request $request
+     */
+    protected function loggedOut(Request $request)
+    {
+        Auth::logout();
+        $request->session()->regenerate();
+
+        return response()->json();
     }
 }
