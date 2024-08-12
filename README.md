@@ -10,7 +10,7 @@
 ### EC2へのデプロイ
 - https://wingdoor.co.jp/blog/%E3%80%90amazon-linux-2%E3%80%91-laravel%E3%81%8C%E5%8B%95%E3%81%8F%E7%92%B0%E5%A2%83%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B/
 
-###　独自ドメインとEC2の紐づけ 
+### 独自ドメインとEC2の紐づけ 
 #### NSレコードの登録
 - https://dev.classmethod.jp/articles/mumu-domain-route53/
 
