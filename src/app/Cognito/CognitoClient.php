@@ -124,7 +124,7 @@ class CognitoClient
 
         $this->setUserAttributes($email, ['email_verified' => 'true']);
 
-        return (bool) $response['UserConfirmed'];
+        return $response['UserSub'];
     }
 
     /**
