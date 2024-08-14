@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+// 追加
+use Illuminate\Http\Request;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Validation\ValidationException;
+use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-
-//追加
-use Ellaisys\Cognito\Auth\AuthenticatesUsers as CognitoAuthenticatesUsers;
 
 class LoginController extends Controller
 {
@@ -21,9 +22,7 @@ class LoginController extends Controller
     | to conveniently provide its functionality to your applications.
     |
     */
-
-    // use AuthenticatesUsers;
-    use CognitoAuthenticatesUsers;
+    use AuthenticatesUsers;
 
     /**
      * Where to redirect users after login.
@@ -40,41 +39,43 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+        $this->middleware('auth')->only('logout');
     }
 
     public function showLoginForm() {
         return view("auth.login");
     }
 
-    /**
-     * Authenticate User
-     *
-     * @throws \HttpException
-     *
-     * @return mixed
-     */
-    public function login(\Illuminate\Http\Request $request)
+    public function login(Request $request)
     {
+        $this->validateLogin($request);
 
-        //Convert request to collection
-        $collection = collect($request->all());
+        if ($this->hasTooManyLoginAttempts($request)) {
+            $this->fireLockoutEvent($request);
 
-        //Authenticate with Cognito Package Trait (with 'web' as the auth guard)
-        if ($response = $this->attemptLogin($collection, 'web')) {
-            if ($response===true) {
-                return redirect(route('home'))->with('success', true);
-            } else if ($response===false) {
-                // If the login attempt was unsuccessful you may increment the number of attempts
-                // to login and redirect the user back to the login form. Of course, when this
-                // user surpasses their maximum number of attempts they will get locked out.
-                //
-                //$this->incrementLoginAttempts($request);
-                //
-                //$this->sendFailedLoginResponse($collection, null);
-            } else {
-                return $response;
-            } //End if
-        } //End if
+            return $this->sendLockoutResponse($request);
+        }
 
-    } //Function ends
+        try
+        {
+            if ($this->attemptLogin($request)) {
+                return $this->sendLoginResponse($request);
+            }
+        }
+        catch(CognitoIdentityProviderException $c) {
+            return $this->sendFailedCognitoResponse($c);
+        }
+        catch (\Exception $e) {
+            return $this->sendFailedLoginResponse($request);
+        }
+
+        return $this->sendFailedLoginResponse($request);
+    }
+
+    private function sendFailedCognitoResponse(CognitoIdentityProviderException $exception)
+    {
+        throw ValidationException::withMessages([
+            $this->username() => $exception->getAwsErrorMessage(),
+        ]);
+    }
 }
