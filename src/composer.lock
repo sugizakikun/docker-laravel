@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b2e6b668853dc1523508974c5a17dc5",
+    "content-hash": "38b06412edc7a1b89653cbb3d0df21b9",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -157,6 +157,82 @@
                 "source": "https://github.com/aws/aws-sdk-php/tree/3.319.3"
             },
             "time": "2024-08-12T18:06:14+00:00"
+        },
+        {
+            "name": "black-bits/laravel-cognito-auth",
+            "version": "0.1.16",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/black-bits/laravel-cognito-auth.git",
+                "reference": "701450fcaf84668cc618b2976afd2cbd6a4b0c7b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/black-bits/laravel-cognito-auth/zipball/701450fcaf84668cc618b2976afd2cbd6a4b0c7b",
+                "reference": "701450fcaf84668cc618b2976afd2cbd6a4b0c7b",
+                "shasum": ""
+            },
+            "require": {
+                "aws/aws-sdk-php": "^3.61",
+                "illuminate/auth": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|^9.0",
+                "illuminate/config": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|^9.0",
+                "illuminate/http": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|^9.0",
+                "illuminate/support": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|6.*|7.*|8.*|^9.0",
+                "php": "^7.1|^8.0"
+            },
+            "require-dev": {
+                "larapack/dd": "^1.0",
+                "phpunit/phpunit": "^7.0|^9.5.10"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "BlackBits\\LaravelCognitoAuth\\CognitoAuthServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "BlackBits\\LaravelCognitoAuth\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Heck",
+                    "email": "oliver.heck@blackbits.io",
+                    "homepage": "https://blackbits.io",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Andreas Przywara",
+                    "email": "andreas.przywara@blackbits.io",
+                    "homepage": "https://blackbits.io",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Adrian Raeuchle",
+                    "email": "adrian.raeuchle@blackbits.io",
+                    "homepage": "https://blackbits.io",
+                    "role": "Developer"
+                }
+            ],
+            "description": "An auth provider for Laravel for AWS Cognito.",
+            "homepage": "https://github.com/black-bits/laravel-cognito-auth",
+            "keywords": [
+                "AWS Cognito",
+                "Auth Provider",
+                "blackbits"
+            ],
+            "support": {
+                "issues": "https://github.com/black-bits/laravel-cognito-auth/issues",
+                "source": "https://github.com/black-bits/laravel-cognito-auth/tree/0.1.16"
+            },
+            "time": "2022-04-07T04:57:00+00:00"
         },
         {
             "name": "brick/math",
