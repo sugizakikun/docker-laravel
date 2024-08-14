@@ -3,6 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+// 追加
+use Illuminate\Http\Request;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Validation\ValidationException;
+use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -17,7 +22,6 @@ class LoginController extends Controller
     | to conveniently provide its functionality to your applications.
     |
     */
-
     use AuthenticatesUsers;
 
     /**
@@ -25,7 +29,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
@@ -38,8 +42,40 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    protected function loggedOut()
+    public function showLoginForm() {
+        return view("auth.login");
+    }
+
+    public function login(Request $request)
     {
-       return redirect(route('login'));
+        $this->validateLogin($request);
+
+        if ($this->hasTooManyLoginAttempts($request)) {
+            $this->fireLockoutEvent($request);
+
+            return $this->sendLockoutResponse($request);
+        }
+
+        try
+        {
+            if ($this->attemptLogin($request)) {
+                return $this->sendLoginResponse($request);
+            }
+        }
+        catch(CognitoIdentityProviderException $c) {
+            return $this->sendFailedCognitoResponse($c);
+        }
+        catch (\Exception $e) {
+            return $this->sendFailedLoginResponse($request);
+        }
+
+        return $this->sendFailedLoginResponse($request);
+    }
+
+    private function sendFailedCognitoResponse(CognitoIdentityProviderException $exception)
+    {
+        throw ValidationException::withMessages([
+            $this->username() => $exception->getAwsErrorMessage(),
+        ]);
     }
 }

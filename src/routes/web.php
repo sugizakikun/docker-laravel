@@ -19,4 +19,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::get("/register", "App\Http\Controllers\Auth\RegisterController@showRegistrationForm")->name('auth.register_form');
+Route::post("/register", "App\Http\Controllers\Auth\RegisterController@register")->name('auth.register');
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
