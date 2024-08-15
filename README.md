@@ -24,5 +24,6 @@
 下記のコマンドを打ち込んでください。
 そうするとmanifest.jsonが読み込まれます。
 ```
+docker-compose exec app npm install
 docker-compose exec app npm run build
 ```
