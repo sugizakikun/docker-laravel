@@ -20,10 +20,40 @@
 
 
 
-## コマンド
-下記のコマンドを打ち込んでください。
-そうするとmanifest.jsonが読み込まれます。
+## コマンド(git cloneした時 or 環境が壊れた時用)
+
+### 1. コンテナに入る
 ```
-docker-compose exec app npm install
-docker-compose exec app npm run build
+docker-compose exec app bash
 ```
+
+### 2. 依存関係のインストール
+```
+root@1d494784f8e6:/data# composer install
+```
+
+### 3. アセットのビルド
+
+```
+root@1d494784f8e6:/data# npm install
+root@1d494784f8e6:/data# npm build 
+```
+
+### 4. .envファイルの生成
+```
+root@1d494784f8e6:/data#　cp .env.example .env
+```
+  
+### 5. アプリケーションキーの生成
+
+```
+root@1d494784f8e6:/data# php artisan key:generate
+
+   INFO  Application key set successfully.
+```
+
+### 6. ログイン画面にアクセス
+
+http://localhost:8080/login
+
+
