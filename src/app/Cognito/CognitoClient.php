@@ -3,8 +3,8 @@ namespace App\Cognito;
 
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
 
 class CognitoClient
 {
@@ -128,6 +128,44 @@ class CognitoClient
     }
 
     /**
+     * Reset a users password based on reset code.
+     * http://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ConfirmForgotPassword.html.
+     *
+     * @param string $code
+     * @param string $username
+     * @param string $password
+     * @return string
+     */
+    public function resetPassword($code, $username, $password)
+    {
+        try {
+            $this->client->confirmForgotPassword([
+                'ClientId' => $this->clientId,
+                'ConfirmationCode' => $code,
+                'Password' => $password,
+                'SecretHash' => $this->cognitoSecretHash($username),
+                'Username' => $username,
+            ]);
+        } catch (CognitoIdentityProviderException $e) {
+            if ($e->getAwsErrorCode() === self::USER_NOT_FOUND) {
+                return Password::INVALID_USER;
+            }
+
+            if ($e->getAwsErrorCode() === self::INVALID_PASSWORD) {
+                return Lang::has('passwords.password') ? 'passwords.password' : $e->getAwsErrorMessage();
+            }
+
+            if ($e->getAwsErrorCode() === self::CODE_MISMATCH || $e->getAwsErrorCode() === self::EXPIRED_CODE) {
+                return Password::INVALID_TOKEN;
+            }
+
+            throw $e;
+        }
+
+        return Password::PASSWORD_RESET;
+    }
+
+    /**
      * Send a password reset code to a user.
      * @see http://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ForgotPassword.html
      *
@@ -165,7 +203,7 @@ class CognitoClient
      */
     public function setUserAttributes($username, array $attributes)
     {
-        $this->client->AdminUpdateUserAttributes([
+        $response = $this->client->AdminUpdateUserAttributes([
             'Username' => $username,
             'UserPoolId' => $this->poolId,
             'UserAttributes' => $this->formatAttributes($attributes),

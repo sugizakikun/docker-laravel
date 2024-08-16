@@ -8,9 +8,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 // 追加
-use Illuminate\Auth\AuthManager;
+use App\Cognito\CognitoClient;
 use Illuminate\Http\Request;
-use App\Rules\CognitoUserUniqueRule;
 use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
@@ -19,13 +18,13 @@ class RegisterController extends Controller
 
     protected $redirectTo = '/home';
 
-    private $AuthManager; // 追加
+    private $cognitoClient; // 追加
 
-    public function __construct(AuthManager $AuthManager)
+    public function __construct(CognitoClient $cognitoClient)
     {
         $this->middleware('guest');
         // CognitoのGuardを読み込む
-        $this->AuthManager = $AuthManager;
+        $this->cognitoClient = $cognitoClient;
     }
 
     public function register(Request $request)
@@ -36,7 +35,7 @@ class RegisterController extends Controller
         $this->validator($data)->validate();
 
         // Cognito側の新規登録
-        $username = $this->AuthManager->register(
+        $username = $this->cognitoClient->register(
             $data['email'],
             $data['password'],
             [
