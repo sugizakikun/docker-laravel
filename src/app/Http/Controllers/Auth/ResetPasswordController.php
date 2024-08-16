@@ -86,6 +86,6 @@ class ResetPasswordController extends Controller
 
         $createdAt = new Carbon($passwordReset->created_at);
 
-        return $createdAt->subMinutes(10)->isPast();
+        return $createdAt->addMinutes(10)->isPast();
     }
 }
