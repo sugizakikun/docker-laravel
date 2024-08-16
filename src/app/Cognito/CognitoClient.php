@@ -178,9 +178,17 @@ class CognitoClient
                 'SecretHash' => $this->cognitoSecretHash($username),
                 'Username' => $username,
             ]);
+
         } catch (CognitoIdentityProviderException $e) {
-            if ($e->getAwsErrorCode() === self::USER_NOT_FOUND) {
+            $errorCode = $e->getAwsErrorCode();
+            $errorMessage = $e->getAwsErrorMessage();
+
+            if ($errorCode === self::USER_NOT_FOUND) {
                 return Password::INVALID_USER;
+            }
+
+            if ($errorCode === 'LimitExceededException') {
+                return Password::RESET_THROTTLED;
             }
 
             throw $e;
