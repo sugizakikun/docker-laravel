@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Carbon\Carbon;
+use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Support\Facades\DB;
 use App\Cognito\CognitoClient;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use App\Models\PasswordReset;
 
 class ResetPasswordController extends Controller
 {
@@ -38,6 +41,20 @@ class ResetPasswordController extends Controller
         $this->cognitoClient = $cognitoClient;
     }
 
+    public function showResetForm(Request $request)
+    {
+        $token = $request->route()->parameter('token');
+
+        # トークン期限切れの場合/password/resetにリダイレクト
+        if($this->hasExpired($request->email)){
+            return redirect(route('password.request'));
+        }
+
+        return view('auth.passwords.reset')->with(
+            ['token' => $token, 'email' => $request->email]
+        );
+    }
+
     public function reset(Request $request)
     {
         DB::beginTransaction();
@@ -61,5 +78,14 @@ class ResetPasswordController extends Controller
         return $response == Password::PASSWORD_RESET
             ? $this->sendResetResponse($request, $response)
             : $this->sendResetFailedResponse($request, $response);
+    }
+
+    private function hasExpired(string $email)
+    {
+        $passwordReset = PasswordReset::where('email', $email)->first();
+
+        $createdAt = new Carbon($passwordReset->created_at);
+
+        return $createdAt->subMinutes(10)->isPast();
     }
 }

@@ -122,8 +122,6 @@ class CognitoClient
             throw $e;
         }
 
-        $this->setUserAttributes($email, ['email_verified' => 'true']);
-
         return $response['UserSub'];
     }
 
