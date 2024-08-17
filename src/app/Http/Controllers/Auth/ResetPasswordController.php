@@ -72,6 +72,8 @@ class ResetPasswordController extends Controller
 
         $response = $this->cognitoClient->resetPassword($code, $email, $password);
 
+        $this->deletePasswordReset($email);
+
         DB::commit();
         // ここでConfirmForgotPassword API()呼び出し
         // 参考リンク：https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ConfirmForgotPassword.html
@@ -80,12 +82,21 @@ class ResetPasswordController extends Controller
             : $this->sendResetFailedResponse($request, $response);
     }
 
-    private function hasExpired(string $email)
+    private function hasExpired(string $email) : bool
     {
         $passwordReset = PasswordReset::where('email', $email)->first();
 
-        $createdAt = new Carbon($passwordReset->created_at);
+        if(!$passwordReset){
+            return true;
+        } else {
+            $createdAt = new Carbon($passwordReset->created_at);
 
-        return $createdAt->addMinutes(10)->isPast();
+            return $createdAt->addMinutes(10)->isPast();
+        }
+    }
+
+    private function deletePasswordReset(string $email) :void
+    {
+        PasswordReset::where('email', $email)->delete();
     }
 }
