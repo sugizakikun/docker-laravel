@@ -183,6 +183,12 @@ class CognitoClient
                 return Password::INVALID_USER;
             }
 
+            $userAttributes = $this->formatKeyValue($user['UserAttributes']);
+
+            if($userAttributes['email_verified'] == 'false'){
+                return 'email is not verified';
+            }
+
             $result = $this->client->forgotPassword([
                 'ClientId' => $this->clientId,
                 'SecretHash' => $this->cognitoSecretHash($username),
@@ -292,5 +298,15 @@ class CognitoClient
         }
 
         return $userAttributes;
+    }
+
+    private function formatKeyValue(array $userAttributes){
+        $attributes = [];
+
+        foreach($userAttributes as $userAttribute){
+            $attributes[$userAttribute['Name']] = $userAttribute['Value'];
+        }
+
+        return $attributes;
     }
 }
