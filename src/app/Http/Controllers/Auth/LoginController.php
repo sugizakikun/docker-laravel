@@ -43,7 +43,16 @@ class LoginController extends Controller
     }
 
     public function showLoginForm() {
-        return view("auth.login");
+        $params = [
+            '{domain_name}' => config('cognito.domain_name'),
+            '{region}' => config('cognito.region'),
+            '{app_client_id}' => config('cognito.app_client_id'),
+            '{redirect_url}' => 'http://localhost:8080/home'
+        ];
+
+        $authURL = str_replace(array_keys($params), array_values($params), config('cognito.google_auth_url') );
+
+        return view("auth.login")->with(['authUrl' => $authURL ]);
     }
 
     public function login(Request $request)
