@@ -40,12 +40,16 @@ class ForgotPasswordController extends Controller
 
         $response = $this->cognitoClient->sendResetLink($email);
 
-        $this->broker()->sendResetLink(
-            $this->credentials($request)
-        );
+        if($response != Password::RESET_LINK_SENT)
+        {
+            return $this->sendResetLinkFailedResponse($request, $response);
+        }
+        else {
+            $this->broker()->sendResetLink(
+                $this->credentials($request)
+            );
 
-        return $response == Password::RESET_LINK_SENT
-            ? $this->sendResetLinkResponse($request, $response)
-            : $this->sendResetLinkFailedResponse($request, $response);
+            return  $this->sendResetLinkResponse($request, $response);
+        }
     }
 }
