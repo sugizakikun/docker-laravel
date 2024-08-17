@@ -36,7 +36,7 @@ root@1d494784f8e6:/data# composer install
 
 ```
 root@1d494784f8e6:/data# npm install
-root@1d494784f8e6:/data# npm build 
+root@1d494784f8e6:/data# npm run build 
 ```
 
 ### 4. .envファイルの生成
