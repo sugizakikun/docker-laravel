@@ -153,8 +153,12 @@ class CognitoClient
                 return Lang::has('passwords.password') ? 'passwords.password' : $e->getAwsErrorMessage();
             }
 
-            if ($e->getAwsErrorCode() === self::CODE_MISMATCH || $e->getAwsErrorCode() === self::EXPIRED_CODE) {
+            if ($e->getAwsErrorCode() === self::CODE_MISMATCH) {
                 return Password::INVALID_TOKEN;
+            }
+
+            if($e->getAwsErrorCode() === self::EXPIRED_CODE){
+                return $e->getAwsErrorMessage();
             }
 
             throw $e;
