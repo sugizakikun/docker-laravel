@@ -16,6 +16,7 @@ class CognitoClient
     const INVALID_PASSWORD       = 'InvalidPasswordException';
     const CODE_MISMATCH          = 'CodeMismatchException';
     const EXPIRED_CODE           = 'ExpiredCodeException';
+    const LIMIT_EXCEEDED         = 'LimitExceededException';
 
     /**
      * @var CognitoIdentityProviderClient
@@ -157,7 +158,7 @@ class CognitoClient
                 return Password::INVALID_TOKEN;
             }
 
-            if($e->getAwsErrorCode() === self::EXPIRED_CODE){
+            if($e->getAwsErrorCode() === self::EXPIRED_CODE || $e->getAwsErrorCode() === self::LIMIT_EXCEEDED) {
                 return $e->getAwsErrorMessage();
             }
 
