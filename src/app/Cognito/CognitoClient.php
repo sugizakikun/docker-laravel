@@ -173,6 +173,12 @@ class CognitoClient
     public function sendResetLink($username)
     {
         try {
+            $user = $this->getUser($username);
+
+            if(!$user){
+                return Password::INVALID_USER;
+            }
+
             $result = $this->client->forgotPassword([
                 'ClientId' => $this->clientId,
                 'SecretHash' => $this->cognitoSecretHash($username),
@@ -182,10 +188,6 @@ class CognitoClient
         } catch (CognitoIdentityProviderException $e) {
             $errorCode = $e->getAwsErrorCode();
             $errorMessage = $e->getAwsErrorMessage();
-
-            if ($errorCode === self::USER_NOT_FOUND) {
-                return Password::INVALID_USER;
-            }
 
             if ($errorCode === 'LimitExceededException') {
                 return Password::RESET_THROTTLED;
