@@ -9,6 +9,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Validation\ValidationException;
 use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Http\Services\CreateGoogleAuthUrl;
 
 class LoginController extends Controller
 {
@@ -42,17 +43,10 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    public function showLoginForm() {
-        $params = [
-            '{domain_name}' => config('cognito.domain_name'),
-            '{region}' => config('cognito.region'),
-            '{app_client_id}' => config('cognito.app_client_id'),
-            '{redirect_url}' => 'http://localhost:8080/home'
-        ];
+    public function showLoginForm(CreateGoogleAuthUrl $createGoogleAuthUrl) {
+        $authUrl = $createGoogleAuthUrl->execute();
 
-        $authURL = str_replace(array_keys($params), array_values($params), config('cognito.google_auth_url') );
-
-        return view("auth.login")->with(['authUrl' => $authURL ]);
+        return view("auth.login")->with(['authUrl' => $authUrl ]);
     }
 
     public function login(Request $request)
