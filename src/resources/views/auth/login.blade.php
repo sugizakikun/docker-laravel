@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Login') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('login') }}" class="mb-3 border-bottom">
                         @csrf
 
                         <div class="row mb-3">
@@ -51,7 +51,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-0">
+                        <div class="row mb-3">
                             <div class="col-md-8 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Login') }}
@@ -65,6 +65,13 @@
                             </div>
                         </div>
                     </form>
+
+                    <div class="mb-3 justify-content-center">
+                        <a class="btn btn-danger col-12" href="{{$authUrl}}">
+                            <i class="fab fa-google"></i>
+                            Googleアカウントでログイン
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
