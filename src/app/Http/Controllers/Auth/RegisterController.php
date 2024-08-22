@@ -29,11 +29,14 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-        DB::beginTransaction();
+        #DB::beginTransaction();
 
         $data = $request->all();
         $this->validator($data)->validate();
 
+        $this->create($data, $data['username']);
+
+        /*
         // Cognito側の新規登録
         $username = $this->cognitoClient->register(
             $data['email'],
@@ -47,7 +50,7 @@ class RegisterController extends Controller
         $user = $this->create($data, $username);
         event(new Registered($user));
 
-        DB::commit();
+        DB::commit();*/
 
         return redirect()->route('home');
     }
