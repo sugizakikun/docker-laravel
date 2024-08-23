@@ -9,6 +9,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Validation\ValidationException;
 use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Http\Services\CreateGoogleAuthUrl;
 
 class LoginController extends Controller
 {
@@ -42,8 +43,10 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    public function showLoginForm() {
-        return view("auth.login");
+    public function showLoginForm(CreateGoogleAuthUrl $createGoogleAuthUrl) {
+        $authUrl = $createGoogleAuthUrl->execute();
+
+        return view("auth.login")->with(['authUrl' => $authUrl ]);
     }
 
     public function login(Request $request)

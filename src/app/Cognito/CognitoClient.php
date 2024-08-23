@@ -3,8 +3,8 @@ namespace App\Cognito;
 
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
 
 class CognitoClient
 {
@@ -16,6 +16,7 @@ class CognitoClient
     const INVALID_PASSWORD       = 'InvalidPasswordException';
     const CODE_MISMATCH          = 'CodeMismatchException';
     const EXPIRED_CODE           = 'ExpiredCodeException';
+    const LIMIT_EXCEEDED         = 'LimitExceededException';
 
     /**
      * @var CognitoIdentityProviderClient
@@ -122,9 +123,49 @@ class CognitoClient
             throw $e;
         }
 
-        $this->setUserAttributes($email, ['email_verified' => 'true']);
-
         return $response['UserSub'];
+    }
+
+    /**
+     * Reset a users password based on reset code.
+     * http://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ConfirmForgotPassword.html.
+     *
+     * @param string $code
+     * @param string $username
+     * @param string $password
+     * @return string
+     */
+    public function resetPassword($code, $username, $password)
+    {
+        try {
+            $this->client->confirmForgotPassword([
+                'ClientId' => $this->clientId,
+                'ConfirmationCode' => $code,
+                'Password' => $password,
+                'SecretHash' => $this->cognitoSecretHash($username),
+                'Username' => $username,
+            ]);
+        } catch (CognitoIdentityProviderException $e) {
+            if ($e->getAwsErrorCode() === self::USER_NOT_FOUND) {
+                return Password::INVALID_USER;
+            }
+
+            if ($e->getAwsErrorCode() === self::INVALID_PASSWORD) {
+                return Lang::has('passwords.password') ? 'passwords.password' : $e->getAwsErrorMessage();
+            }
+
+            if ($e->getAwsErrorCode() === self::CODE_MISMATCH) {
+                return Password::INVALID_TOKEN;
+            }
+
+            if($e->getAwsErrorCode() === self::EXPIRED_CODE || $e->getAwsErrorCode() === self::LIMIT_EXCEEDED) {
+                return $e->getAwsErrorMessage();
+            }
+
+            throw $e;
+        }
+
+        return Password::PASSWORD_RESET;
     }
 
     /**
@@ -137,14 +178,30 @@ class CognitoClient
     public function sendResetLink($username)
     {
         try {
+            $user = $this->getUser($username);
+
+            if(!$user){
+                return Password::INVALID_USER;
+            }
+
+            $userAttributes = $this->formatKeyValue($user['UserAttributes']);
+
+            if($userAttributes['email_verified'] == 'false'){
+                return 'email is not verified';
+            }
+
             $result = $this->client->forgotPassword([
                 'ClientId' => $this->clientId,
                 'SecretHash' => $this->cognitoSecretHash($username),
                 'Username' => $username,
             ]);
+
         } catch (CognitoIdentityProviderException $e) {
-            if ($e->getAwsErrorCode() === self::USER_NOT_FOUND) {
-                return Password::INVALID_USER;
+            $errorCode = $e->getAwsErrorCode();
+            $errorMessage = $e->getAwsErrorMessage();
+
+            if ($errorCode === 'LimitExceededException') {
+                return Password::RESET_THROTTLED;
             }
 
             throw $e;
@@ -165,7 +222,7 @@ class CognitoClient
      */
     public function setUserAttributes($username, array $attributes)
     {
-        $this->client->AdminUpdateUserAttributes([
+        $response = $this->client->AdminUpdateUserAttributes([
             'Username' => $username,
             'UserPoolId' => $this->poolId,
             'UserAttributes' => $this->formatAttributes($attributes),
@@ -242,5 +299,15 @@ class CognitoClient
         }
 
         return $userAttributes;
+    }
+
+    private function formatKeyValue(array $userAttributes){
+        $attributes = [];
+
+        foreach($userAttributes as $userAttribute){
+            $attributes[$userAttribute['Name']] = $userAttribute['Value'];
+        }
+
+        return $attributes;
     }
 }
