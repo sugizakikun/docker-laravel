@@ -15,6 +15,18 @@ $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
+switch ($_SERVER['HTTP_HOST'] ?? 'localhost:8080') {
+    // ローカル環境
+    case 'localhost:8080':
+        $app->loadEnvironmentFrom('env/.env.local');
+        break;
+
+    // EC2環境
+    case 'sakopi.site':
+        $app->loadEnvironmentFrom('env/.env.dev');
+        break;
+}
+
 /*
 |--------------------------------------------------------------------------
 | Bind Important Interfaces
