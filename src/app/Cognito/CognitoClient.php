@@ -210,6 +210,27 @@ class CognitoClient
         return Password::RESET_LINK_SENT;
     }
 
+    /**
+     * Destroy a user from cognito user pool.
+     *  @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminDeleteUser.html
+     *
+     * @param $username
+     * @return string|true|null
+     */
+    public function destroyUser($username)
+    {
+        try {
+            $result = $this->client->adminDeleteUser([
+                'Username' => $username,
+                'UserPoolId' => $this->poolId
+            ]);
+
+            return true;
+        } catch (CognitoIdentityProviderException $e) {
+            return $e->getAwsErrorMessage();
+        }
+    }
+
     # HELPER FUNCTIONS
 
     /**
