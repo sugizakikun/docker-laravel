@@ -3,17 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Cognito\CognitoClient;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Services\DestroyUser;
 
-class WithdrawalController extends Controller
+class WithdrawController extends Controller
 {
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(CognitoClient $cognitoClient)
     {
         $this->middleware('auth');
+        $this->cognitoClient = $cognitoClient;
     }
 
     /**
@@ -23,6 +27,20 @@ class WithdrawalController extends Controller
      */
     public function index()
     {
-        return view('withdrawal');
+        return view('withdraw');
+    }
+
+    /**
+     * @param DestroyUser $destroyUser
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
+    public function destroy(DestroyUser $destroyUser)
+    {
+        $user = Auth::user();
+        $isSucceeded = $destroyUser->execute($user);
+
+        if($isSucceeded){
+            return redirect()->route('login');
+        }
     }
 }
