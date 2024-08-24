@@ -8,7 +8,13 @@
                 <div class="card-header">退会手続き</div>
 
                 <div class="card-body">
-                   本当に退会しますか？
+                    <form method="post" action="{{ route('withdraw') }}" class="mb-3">
+                        <input type="hidden" name="_method" value="DELETE"> <!-- この1行を追加！-->
+                        @csrf
+                        本当に退会しますか？
+
+                        <button type="submit" class="btn btn-danger">退会する</button>
+                    </form>
                 </div>
             </div>
         </div>
