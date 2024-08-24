@@ -23,3 +23,6 @@ Route::get("/register", "App\Http\Controllers\Auth\RegisterController@showRegist
 Route::post("/register", "App\Http\Controllers\Auth\RegisterController@register")->name('auth.register');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('/withdraw', "App\Http\Controllers\WithDrawController@index")->name('withdraw');
+Route::delete('/withdraw', "App\Http\Controllers\WithDrawController@destroy")->name('withdraw');
