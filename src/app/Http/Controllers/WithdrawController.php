@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Cognito\CognitoClient;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Services\DestroyUser;
 
@@ -14,10 +12,9 @@ class WithdrawController extends Controller
      *
      * @return void
      */
-    public function __construct(CognitoClient $cognitoClient)
+    public function __construct()
     {
         $this->middleware('auth');
-        $this->cognitoClient = $cognitoClient;
     }
 
     /**
