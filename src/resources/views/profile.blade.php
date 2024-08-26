@@ -24,6 +24,15 @@
                             </button>
                         </a>
                     </div>
+
+                    <div class="mb-3 justify-content-center">
+                        <form method="POST" action="{{ route('profile.edit') }}" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="_method" value="PUT">
+                            <input type="file" name="image">
+                            <button>アップロード</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

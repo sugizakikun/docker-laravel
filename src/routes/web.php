@@ -23,5 +23,7 @@ Route::get("/register", "App\Http\Controllers\Auth\RegisterController@showRegist
 Route::post("/register", "App\Http\Controllers\Auth\RegisterController@register")->name('auth.register');
 
 Route::get('/home', "App\Http\Controllers\HomeController@index")->name('home');
+
 Route::get('/profile', "App\Http\Controllers\ProfileController@index")->name('profile');
+Route::put('/profile', "App\Http\Controllers\ProfileController@update")->name('profile.edit');
 

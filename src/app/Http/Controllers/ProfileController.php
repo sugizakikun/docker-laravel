@@ -27,4 +27,14 @@ class ProfileController extends Controller
         $user = Auth::user();
         return view('profile')->with('user', $user);
     }
+
+    public function update(Request $request)
+    {
+        // ディレクトリ名を任意の名前で設定します
+        $dir = 'img';
+        $request->file('image')->store('public/' . $dir);
+
+        // ページを更新します
+        return redirect('/');
+    }
 }
