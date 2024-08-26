@@ -10,20 +10,17 @@
                 </div>
 
                 <div class="card-body">
-                    <img src="{{ $user->profile_image_key ? asset($user->profile_image_key): asset('img/profile_female.png') }}" width="75" height="75">
-                    Welocome! {{$user->name}} san!
+                    <div class="position-relative">
+                        <img src="{{ $user->profile_image_key ? asset($user->profile_image_key): asset('img/profile_female.png') }}" width="200" height="200">
+                        <div class="position-absolute color-bg-defaultcolor-fg-default px-2 py-1 left-0 bottom-0 ml-2 mb-2">
+                            <button class="btn btn-outline-secondary">Edit</button>
+                        </div>
+                    </div>
+                    <h3>Name</h3>
+                    {{$user->name}}
 
                     <h3>Email address</h3>
                     <p>{{$user->email}}</p>
-
-                    <div class="mb-3 justify-content-center">
-                        <a href="#">
-                            <button class="btn btn-primary col-12">
-                                <i class="fa fa-pen"></i>
-                                プロフィールを編集する
-                            </button>
-                        </a>
-                    </div>
 
                     <div class="mb-3 justify-content-center">
                         <form method="POST" action="{{ route('profile.edit') }}" enctype="multipart/form-data">
