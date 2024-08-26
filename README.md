@@ -56,4 +56,15 @@ root@1d494784f8e6:/data# php artisan key:generate
 
 http://localhost:8080/login
 
+## 有事の時の対処法
 
+もしPermissionDenied!と言われたら？
+
+```
+$ php artisan cache:clear
+$ php artisan route:clear
+$ php artisan config:clear
+```
+
+キャッシュクリアをしたら治る
+参考リンク：https://qiita.com/phper_sugiyama/items/ae308c2a61aa3dbc3bf3
