@@ -14,10 +14,13 @@ class UpdateProfile
         $fileContents = Storage::get($path);
 
         Storage::disk('s3')->put('test2.png', $fileContents);
-        $path = Storage::disk('s3')->temporaryUrl('test2.png', now()->addMinutes(5));
+        $s3Path = Storage::disk('s3')->temporaryUrl('test2.png', now()->addMinutes(5));
 
         $user = Auth::user();
-        $user->profile_image_key = $path;
+        $user->profile_image_key = $s3Path;
         $user->save();
+
+        # S3への保存が成功したらWebサーバー上の一時ファイルを削除
+        Storage::delete($path);
     }
 }

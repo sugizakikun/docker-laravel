@@ -32,8 +32,7 @@ class ProfileController extends Controller
     public function update(Request $request, UpdateProfile $updateProfile)
     {
         if(array_key_exists("image", $request->all())){
-            $dir = 'img';
-            $path = $request->file('image')->store('public/' . $dir);
+            $path = $request->file('image')->store('public/img');
 
             $updateProfile->execute($path);
         }
