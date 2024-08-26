@@ -10,7 +10,7 @@
                 </div>
 
                 <div class="card-body">
-                    <img src="{{ $user->profile_image_key ?? asset('img/profile_female.png') }}" witdh="75" height="75">
+                    <img src="{{ $user->profile_image_key ? asset($user->profile_image_key): asset('img/profile_female.png') }}" witdh="75" height="75">
                     Welocome! {{$user->name}} san!
 
                     <h3>Email address</h3>

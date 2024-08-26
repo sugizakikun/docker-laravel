@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Http\Services\UpdateProfile;
 
 class ProfileController extends Controller
 {
@@ -28,13 +29,15 @@ class ProfileController extends Controller
         return view('profile')->with('user', $user);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, UpdateProfile $updateProfile)
     {
         // ディレクトリ名を任意の名前で設定します
         $dir = 'img';
-        $request->file('image')->store('public/' . $dir);
+        $path = $request->file('image')->store('public/' . $dir);
+
+        $updateProfile->execute($path);
 
         // ページを更新します
-        return redirect('/');
+        return redirect('/profile');
     }
 }
