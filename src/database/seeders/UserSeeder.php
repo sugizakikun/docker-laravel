@@ -51,6 +51,8 @@ class UserSeeder extends Seeder
                 'Username' => $email
             ]);
 
+            $gender = $this->callGenderizeApi($names[$i][2]);
+
             DB::table('users')->insert([
                 'cognito_username' => $response['UserSub'],
                 'email'            => $email,
@@ -67,11 +69,21 @@ class UserSeeder extends Seeder
         $url = $prefix . $suffix;
 
         $rawData = $this->httpClient->get($url);
-
         $jsonString = preg_replace('/^callback\(|\);?$/', '',  $rawData);
         $jsonArray = json_decode($jsonString, true);
 
         return $jsonArray["name"];
+    }
+
+    protected function callGenderizeApi(string $name)
+    {
+        $suffix = 'https://api.genderize.io/?name=';
+        $url = $suffix . str_replace(' ', '%20', $name);
+
+        $rawData = $this->httpClient->get($url);
+        $jsonArray = json_decode($rawData, true);
+
+        return $jsonArray["gender"];
     }
 
     /**
