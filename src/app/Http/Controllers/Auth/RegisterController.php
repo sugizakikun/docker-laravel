@@ -22,7 +22,6 @@ class RegisterController extends Controller
 
     public function __construct(CognitoClient $cognitoClient)
     {
-        $this->middleware('guest');
         // CognitoのGuardを読み込む
         $this->cognitoClient = $cognitoClient;
     }
