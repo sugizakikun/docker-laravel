@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('cognito_username')->unique();
             $table->string('name',20)->nullable();
             $table->string('email')->unique();
-            $table->string('profile_image_key')->nullable();
+            $table->text('profile_image_key')->nullable();
             $table->timestamps();
 
             $table->softDeletes();
