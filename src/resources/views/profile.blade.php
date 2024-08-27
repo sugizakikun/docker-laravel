@@ -3,35 +3,43 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
                     {{ __('Dashboard') }}
                 </div>
 
-                <div class="card-body">
-                    <div class="position-relative mb-3">
-                        <img src="{{ $user->profile_image_key ? asset($user->profile_image_key): asset('img/profile_female.png') }}" width="200" height="200">
-                        <div class="position-absolute color-bg-defaultcolor-fg-default px-2 py-1 left-0 bottom-0 ml-2 mb-2">
-                            <button class="btn btn-light" data-toggle="modal" data-target="#updateProfileImage">Edit</button>
+                <div class="card-body row">
+                    <div class="position-relative">
+                        <img src="{{ $user->profile_image_key ? asset($user->profile_image_key): asset('img/profile_female.png') }}" width="100%" height="auto">
+                        <div class="dropdown position-absolute color-bg-defaultcolor-fg-default px-2 py-1 left-0 bottom-0 ml-2 mb-2">
+                            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Edit
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <button class="dropdown-item" data-toggle="modal" data-target="#updateProfileImage">Upload Image</button>
+                                <button class="dropdown-item" data-toggle="modal" data-target="#removeProfileImage">Remove Image</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="basic-url" class="form-label">Name</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="name" value="{{$user->name}}">
+                    <div class="py-3">
+                       <div class="mb-3">
+                            <label for="basic-url" class="form-label">Name</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="name" value="{{$user->name}}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="basic-url" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="email" value="{{$user->email}}">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="basic-url" class="form-label">Email Address</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="email" value="{{$user->email}}">
-                        </div>
-                    </div>
-
-                    <!-- Modal -->
+                    <!-- Modal(updateProfileImage) -->
                     <div class="modal fade" id="updateProfileImage" tabindex="-1" role="dialog" aria-labelledby="updateProfileImage" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content">
@@ -57,6 +65,29 @@
                         </div>
                     </div>
 
+                    <div class="modal fade" id="removeProfileImage" tabindex="-1" role="dialog" aria-labelledby="removeProfileImage" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <form method="POST" action="{{ route('profile.delete') }}" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalCenterTitle">プロフィール画像の削除</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        プロフィール画像をリセットしてもよろしいですか？
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                                        <button type="submit" class="btn btn-danger" id="uploadButton">リセットする</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -26,4 +26,5 @@ Route::get('/home', "App\Http\Controllers\HomeController@index")->name('home');
 
 Route::get('/profile', "App\Http\Controllers\ProfileController@index")->name('profile');
 Route::put('/profile', "App\Http\Controllers\ProfileController@update")->name('profile.edit');
+Route::delete('/profile', "App\Http\Controllers\ProfileController@destroy")->name('profile.delete');
 
