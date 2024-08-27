@@ -22,7 +22,10 @@ Auth::routes();
 Route::get("/register", "App\Http\Controllers\Auth\RegisterController@showRegistrationForm")->name('auth.register_form');
 Route::post("/register", "App\Http\Controllers\Auth\RegisterController@register")->name('auth.register');
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', "App\Http\Controllers\HomeController@index")->name('home');
 
-Route::get('/withdraw', "App\Http\Controllers\WithDrawController@index")->name('withdraw');
+Route::get('/profile', "App\Http\Controllers\ProfileController@index")->name('profile');
+Route::put('/profile', "App\Http\Controllers\ProfileController@update")->name('profile.edit');
+Route::delete('/profile', "App\Http\Controllers\ProfileController@destroy")->name('profile.delete');
+
 Route::delete('/withdraw', "App\Http\Controllers\WithDrawController@destroy")->name('withdraw');
