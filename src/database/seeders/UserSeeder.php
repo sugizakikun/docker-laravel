@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Util\HttpClient;
 use App\Cognito\CognitoClient;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 use Illuminate\Database\Seeder;
@@ -9,9 +10,10 @@ use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {
-    public function __construct(CognitoClient $cognitoClient)
+    public function __construct(CognitoClient $cognitoClient, HttpClient $httpClient)
     {
         $this->cognitoClient = $cognitoClient;
+        $this->httpClient = $httpClient;
         $this->clientId = env('AWS_COGNITO_CLIENT_ID');
         $this->clientSecret = env('AWS_COGNITO_CLIENT_SECRET');
     }
@@ -62,21 +64,9 @@ class UserSeeder extends Seeder
         // APIアクセスURL
         $prefix = 'https://green.adam.ne.jp/roomazi/cgi-bin/randomname.cgi';
         $suffix = '/roomazi/cgi-bin/randomname.cgi?n='. $num;
-
         $url = $prefix . $suffix;
 
-        // ストリームコンテキストのオプションを作成
-        $options = array(
-            // HTTPコンテキストオプションをセット
-            'http' => array(
-                'method'=> 'GET',
-                'header'=> 'Content-type: application/json; charset=UTF-8' //JSON形式で表示
-            )
-        );
-
-        $context = stream_context_create($options);
-
-        $rawData = file_get_contents($url, false, $context);
+        $rawData = $this->httpClient->get($url);
 
         $jsonString = preg_replace('/^callback\(|\);?$/', '',  $rawData);
         $jsonArray = json_decode($jsonString, true);
