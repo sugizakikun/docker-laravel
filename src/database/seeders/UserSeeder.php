@@ -23,6 +23,8 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        $names = $this->callNameGenerateApi(10);
+
         // Cognitoクライアントをインスタンス化
         $cognitoClient = new CognitoIdentityProviderClient([
             'region'  => env('AWS_COGNITO_REGION'),
@@ -50,8 +52,36 @@ class UserSeeder extends Seeder
             DB::table('users')->insert([
                 'cognito_username' => $response['UserSub'],
                 'email'            => $email,
+                'name'             => $names[$i][2]
             ]);
         }
+    }
+
+    protected function callNameGenerateApi(int $num=1)
+    {
+        // APIアクセスURL
+        $prefix = 'https://green.adam.ne.jp/roomazi/cgi-bin/randomname.cgi';
+        $suffix = '/roomazi/cgi-bin/randomname.cgi?n='. $num;
+
+        $url = $prefix . $suffix;
+
+        // ストリームコンテキストのオプションを作成
+        $options = array(
+            // HTTPコンテキストオプションをセット
+            'http' => array(
+                'method'=> 'GET',
+                'header'=> 'Content-type: application/json; charset=UTF-8' //JSON形式で表示
+            )
+        );
+
+        $context = stream_context_create($options);
+
+        $rawData = file_get_contents($url, false, $context);
+
+        $jsonString = preg_replace('/^callback\(|\);?$/', '',  $rawData);
+        $jsonArray = json_decode($jsonString, true);
+
+        return $jsonArray["name"];
     }
 
     /**
