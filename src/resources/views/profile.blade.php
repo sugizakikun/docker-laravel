@@ -171,6 +171,26 @@
             }
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const emailInput = document.getElementById('confirm-email');
+        const phraseInput = document.getElementById('confirm-phrase');
+        const deleteButton = document.getElementById('deleteAccountButton');
+
+        // ユーザーのメールアドレスをサーバーから取得する（テンプレートエンジンで埋め込む）
+        const userEmail = "{{ auth()->user()->email }}";
+        const confirmationPhrase = "delete my account";
+
+        function validateForm() {
+            const isEmailCorrect = emailInput.value === userEmail;
+            const isPhraseCorrect = phraseInput.value.toLowerCase() === confirmationPhrase;
+            deleteButton.disabled = !(isEmailCorrect && isPhraseCorrect);
+        }
+
+        emailInput.addEventListener('input', validateForm);
+        phraseInput.addEventListener('input', validateForm);
+    });
+
 </script>
 
 <style>
