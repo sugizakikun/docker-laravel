@@ -29,3 +29,4 @@ Route::put('/profile', "App\Http\Controllers\ProfileController@update")->name('p
 Route::delete('/profile', "App\Http\Controllers\ProfileController@destroy")->name('profile.delete');
 
 Route::delete('/withdraw', "App\Http\Controllers\WithDrawController@destroy")->name('withdraw');
+Route::get('/withdraw/completed', "App\Http\Controllers\WithDrawController@completed")->name('withdraw.completed');

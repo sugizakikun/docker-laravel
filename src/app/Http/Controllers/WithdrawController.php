@@ -14,17 +14,7 @@ class WithdrawController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
-    }
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index()
-    {
-        return view('withdraw');
+        $this->middleware('auth')->except('completed');
     }
 
     /**
@@ -37,7 +27,15 @@ class WithdrawController extends Controller
         $isSucceeded = $destroyUser->execute($user);
 
         if($isSucceeded){
-            return redirect()->route('login');
+            return redirect()->route('withdraw.completed');
         }
+    }
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function completed()
+    {
+        return view('withdrawal_completed');
     }
 }
