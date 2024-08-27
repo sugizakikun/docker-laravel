@@ -28,3 +28,5 @@ Route::get('/profile', "App\Http\Controllers\ProfileController@index")->name('pr
 Route::put('/profile', "App\Http\Controllers\ProfileController@update")->name('profile.edit');
 Route::delete('/profile', "App\Http\Controllers\ProfileController@destroy")->name('profile.delete');
 
+Route::delete('/withdraw', "App\Http\Controllers\WithDrawController@destroy")->name('withdraw');
+Route::get('/withdraw/completed', "App\Http\Controllers\WithDrawController@completed")->name('withdraw.completed');
