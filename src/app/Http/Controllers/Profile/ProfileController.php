@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Profile;
 
-use App\Http\Services\Profile\UpdateProfile;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
+use App\Http\Services\Profile\DestroyProfile;
+use App\Http\Services\Profile\UpdateProfile;
 
 class ProfileController extends Controller
 {
@@ -47,5 +47,20 @@ class ProfileController extends Controller
         $result = $updateProfile->execute($name, $email);
 
         return redirect('/profile')->with('result', $result);
+    }
+
+
+    /**
+     * @param DestroyProfile $destroyProfile
+     * @return \Illuminate\Http\RedirectResponse|void
+     */
+    public function destroy(DestroyProfile $destroyProfile)
+    {
+        $user = Auth::user();
+        $isSucceeded = $destroyProfile->execute($user);
+
+        if($isSucceeded){
+            return view('withdrawal_completed');
+        }
     }
 }

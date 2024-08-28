@@ -114,7 +114,7 @@
             <div class="modal fade" id="deleteAccount" tabindex="-1" role="dialog" aria-labelledby="deleteAccount" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <form method="POST" action="{{ route('withdraw') }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('profile.destroy') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalCenterTitle">アカウントの削除</h5>

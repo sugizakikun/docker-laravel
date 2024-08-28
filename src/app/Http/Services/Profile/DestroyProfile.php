@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Http\Services\Profile;
 
 use App\Models\User;
 use App\Cognito\CognitoClient;
-use Illuminate\Support\Facades\DB;
 
-class DestroyUser
+class DestroyProfile
 {
     public function __construct(CognitoClient $cognitoClient)
     {
@@ -16,19 +15,19 @@ class DestroyUser
     public function execute(User $user)
     {
         try {
-            DB::beginTransaction();
             $username = $user['cognito_username'];
-            $this->cognitoClient->destroyUser($username);
+            $isSucceed = $this->cognitoClient->destroyUser($username);
 
-            (new User())->newQuery()
-                ->where('cognito_username', $username)
-                ->delete();
-
-            DB::commit();
-
-            return true;
+            if($isSucceed === true) {
+                (new User())->newQuery()
+                    ->where('cognito_username', $username)
+                    ->first()
+                    ->delete();
+            }
         } catch (\Exception $e){
             return false;
         }
+
+        return true;
     }
 }
