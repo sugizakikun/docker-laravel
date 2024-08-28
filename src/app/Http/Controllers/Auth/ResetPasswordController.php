@@ -3,15 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Services\Auth\ResetPassword;
-use Carbon\Carbon;
-use Illuminate\Contracts\Hashing\Hasher;
-use Illuminate\Support\Facades\DB;
-use App\Cognito\CognitoClient;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use App\Models\PasswordReset;
 
 class ResetPasswordController extends Controller
 {
