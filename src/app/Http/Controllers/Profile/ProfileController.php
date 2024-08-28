@@ -44,8 +44,8 @@ class ProfileController extends Controller
         $name = $data['name'];
         $email = $data['email'];
 
-        $updateProfile->execute($name, $email);
+        $result = $updateProfile->execute($name, $email);
 
-        return redirect('/profile');
+        return redirect('/profile')->with('result', $result);
     }
 }
