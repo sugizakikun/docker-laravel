@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Http\Services\Profile;
 
 use Illuminate\Support\Facades\Auth;
 
-class DeleteProfile
+class DeleteProfileImage
 {
     public function execute()
     {

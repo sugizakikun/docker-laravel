@@ -1,56 +1,69 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+@if(session('result'))
+    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+        {{ session('result') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+<div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <h2 class="text-dark border-bottom">Profile</h2>
-            <div class="position-relative mb-3">
-                <img
-                    src="{{ $user->profile_image_key ? asset($user->profile_image_key): asset('img/profile_female.png') }}"
-                    onerror="this.onerror=null; this.src='{{ asset('img/profile_female.png')  }}';"
-                    width="80%"
-                    height="auto"
-                >
-                <div class="dropdown position-absolute color-bg-defaultcolor-fg-default px-2 py-1 left-0 bottom-0 ml-2 mb-2">
-                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Edit
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <button class="dropdown-item" data-toggle="modal" data-target="#updateProfileImage">Upload Image</button>
-                        <button class="dropdown-item" data-toggle="modal" data-target="#removeProfileImage">Remove Image</button>
+            <div class="mb-5">
+                <h2 class="text-dark border-bottom">Profile</h2>
+                <div class="position-relative mb-3">
+                    <img
+                        src="{{ $user->profile_image_key ? asset($user->profile_image_key): asset('img/profile_female.png') }}"
+                        onerror="this.onerror=null; this.src='{{ asset('img/profile_female.png')  }}';"
+                        width="80%"
+                        height="auto"
+                    >
+                    <div class="dropdown position-absolute color-bg-defaultcolor-fg-default px-2 py-1 left-0 bottom-0 ml-2 mb-2">
+                        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Edit
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <button class="dropdown-item" data-toggle="modal" data-target="#updateProfileImage">Upload Image</button>
+                            <button class="dropdown-item" data-toggle="modal" data-target="#removeProfileImage">Remove Image</button>
+                        </div>
                     </div>
                 </div>
+
+                <form method="POST" action="{{ route('profile.edit') }}">
+                    @csrf
+                    <input type="hidden" name="_method" value="PUT">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="name" name="name" value="{{$user->name}}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="email" name="email" value="{{$user->email}}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </form>
             </div>
 
-            <div class="mb-3">
-                <label for="name" class="form-label">Name</label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="name" value="{{$user->name}}">
+            <div>
+                <h2 class="text-danger border-bottom">Delete Account</h2>
+                <div class="mb-3">
+                    <p>Once you delete your account, there is no going back. Please be certain.</p>
+                    <button class="btn btn-danger" data-toggle="modal" data-target="#deleteAccount">Delete your account</button>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email Address</label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="email" value="{{$user->email}}">
-                </div>
-            </div>
-            <div class="mb-3">
-                <button class="btn btn-primary">Update Profile</button>
-            </div>
-
-
-            <h2 class="text-danger border-bottom">Delete Account</h2>
-            <div class="mb-3">
-                <p>Once you delete your account, there is no going back. Please be certain.</p>
-                <button class="btn btn-danger" data-toggle="modal" data-target="#deleteAccount">Delete your account</button>
             </div>
 
             <!-- Modal(updateProfileImage) -->
             <div class="modal fade" id="updateProfileImage" tabindex="-1" role="dialog" aria-labelledby="updateProfileImage" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <form method="POST" action="{{ route('profile.edit') }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('profile_image.edit') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalCenterTitle">プロフィール画像の変更</h5>
@@ -76,7 +89,7 @@
             <div class="modal fade" id="removeProfileImage" tabindex="-1" role="dialog" aria-labelledby="removeProfileImage" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <form method="POST" action="{{ route('profile.delete') }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('profile_image.delete') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalCenterTitle">プロフィール画像の削除</h5>
@@ -101,7 +114,7 @@
             <div class="modal fade" id="deleteAccount" tabindex="-1" role="dialog" aria-labelledby="deleteAccount" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <form method="POST" action="{{ route('withdraw') }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('profile.destroy') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalCenterTitle">アカウントの削除</h5>

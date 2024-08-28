@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Profile;
 
-use App\Http\Services\DeleteProfile;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Http\Services\UpdateProfile;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use App\Http\Services\Profile\DestroyProfile;
+use App\Http\Services\Profile\UpdateProfile;
 
 class ProfileController extends Controller
 {
@@ -34,27 +35,32 @@ class ProfileController extends Controller
      * @param Request $request
      * @param UpdateProfile $updateProfile
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, UpdateProfile $updateProfile)
     {
-        if(array_key_exists("image", $request->all())){
-            $path = $request->file('image')->store('public/img');
+        $data = $request->all();
 
-            $updateProfile->execute($path);
-        }
+        $name = $data['name'];
+        $email = $data['email'];
 
-        // ページを更新します
-        return redirect('/profile');
+        $result = $updateProfile->execute($name, $email);
+
+        return redirect('/profile')->with('result', $result);
     }
 
+
     /**
-     * @param DeleteProfile $deleteProfile
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @param DestroyProfile $destroyProfile
+     * @return \Illuminate\Http\RedirectResponse|void
      */
-    public function destroy(DeleteProfile $deleteProfile)
+    public function destroy(DestroyProfile $destroyProfile)
     {
-        $deleteProfile->execute();
-        // ページを更新します
-        return redirect('/profile');
+        $user = Auth::user();
+        $isSucceeded = $destroyProfile->execute($user);
+
+        if($isSucceeded){
+            return view('withdrawal_completed');
+        }
     }
 }

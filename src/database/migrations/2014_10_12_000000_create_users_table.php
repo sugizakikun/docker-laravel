@@ -20,8 +20,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->text('profile_image_key')->nullable();
             $table->timestamps();
-
-            $table->softDeletes();
         });
     }
 
