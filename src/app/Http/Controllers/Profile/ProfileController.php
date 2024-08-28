@@ -60,6 +60,7 @@ class ProfileController extends Controller
         $isSucceeded = $destroyProfile->execute($user);
 
         if($isSucceeded){
+            Auth::logout();
             return view('withdrawal_completed');
         }
     }
