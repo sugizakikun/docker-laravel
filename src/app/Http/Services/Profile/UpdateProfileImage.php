@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Services;
+namespace App\Http\Services\Profile;
 
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class UpdateProfile
+class UpdateProfileImage
 {
     public function execute(?string $path)
     {

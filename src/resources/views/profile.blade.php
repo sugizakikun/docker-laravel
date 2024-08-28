@@ -50,7 +50,7 @@
             <div class="modal fade" id="updateProfileImage" tabindex="-1" role="dialog" aria-labelledby="updateProfileImage" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <form method="POST" action="{{ route('profile.edit') }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('profile_image.edit') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalCenterTitle">プロフィール画像の変更</h5>
@@ -76,7 +76,7 @@
             <div class="modal fade" id="removeProfileImage" tabindex="-1" role="dialog" aria-labelledby="removeProfileImage" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
-                        <form method="POST" action="{{ route('profile.delete') }}" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('profile_image.delete') }}" enctype="multipart/form-data">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title" id="exampleModalCenterTitle">プロフィール画像の削除</h5>
