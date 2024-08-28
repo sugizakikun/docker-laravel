@@ -80,10 +80,8 @@
             </div>
         </nav>
 
-        <main>
-            <div class="container mt-4">
-                @yield('content')
-            </div>
+        <main class="py-4">
+            @yield('content')
         </main>
     </div>
 </body>
