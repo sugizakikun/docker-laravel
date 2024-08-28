@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-// 追加
 use Illuminate\Http\Request;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Validation\ValidationException;
+use App\Http\Controllers\Controller;
+use App\Http\Services\Auth\CreateGoogleAuthUrl;
+use App\Providers\RouteServiceProvider;
 use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use App\Http\Services\CreateGoogleAuthUrl;
 
 class LoginController extends Controller
 {
