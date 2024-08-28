@@ -10,7 +10,7 @@
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="mb-3">
+            <div class="mb-5">
                 <h2 class="text-dark border-bottom">Profile</h2>
                 <div class="position-relative mb-3">
                     <img
