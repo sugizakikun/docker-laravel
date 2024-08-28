@@ -1,7 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+@if(session('result'))
+    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+        {{ session('result') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+<div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="mb-3">
