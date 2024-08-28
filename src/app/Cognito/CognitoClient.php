@@ -239,11 +239,11 @@ class CognitoClient
                 'Username' => $username,
                 'UserPoolId' => $this->poolId
             ]);
-
-            return true;
         } catch (CognitoIdentityProviderException $e) {
-            return $e->getAwsErrorMessage();
+            return false;
         }
+
+        return true;
     }
 
     # HELPER FUNCTIONS
