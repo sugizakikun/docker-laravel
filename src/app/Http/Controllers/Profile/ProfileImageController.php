@@ -35,7 +35,7 @@ class ProfileImageController extends Controller
         $updateProfileImage->execute($path);
 
         // ページを更新します
-        return redirect('/profile');
+        return redirect('/profile')->with('result', '`Profile image uploaded successfully');
     }
 
     /**
@@ -46,6 +46,6 @@ class ProfileImageController extends Controller
     {
         $deleteProfileImage->execute();
         // ページを更新します
-        return redirect('/profile');
+        return redirect('/profile')->with('result', 'Profile image has been reset successfully');
     }
 }
