@@ -146,19 +146,27 @@ class CognitoClient
                 'Username' => $username,
             ]);
         } catch (CognitoIdentityProviderException $e) {
-            if ($e->getAwsErrorCode() === self::USER_NOT_FOUND) {
+            $errorCode = $e->getAwsErrorCode();
+
+            if($errorCode=== self::USER_NOT_FOUND) {
                 return Password::INVALID_USER;
             }
 
-            if ($e->getAwsErrorCode() === self::INVALID_PASSWORD) {
-                return Lang::has('passwords.password') ? 'passwords.password' : $e->getAwsErrorMessage();
+            if($errorCode === self::INVALID_PASSWORD) {
+                return Lang::has('passwords.password')
+                    ? 'passwords.password'
+                    : $e->getAwsErrorMessage();
             }
 
-            if ($e->getAwsErrorCode() === self::CODE_MISMATCH) {
+            if($errorCode=== self::CODE_MISMATCH) {
                 return Password::INVALID_TOKEN;
             }
 
-            if($e->getAwsErrorCode() === self::EXPIRED_CODE || $e->getAwsErrorCode() === self::LIMIT_EXCEEDED) {
+            if($errorCode === self::LIMIT_EXCEEDED){
+                return Password::RESET_THROTTLED;
+            }
+
+            if($errorCode === self::EXPIRED_CODE ) {
                 return $e->getAwsErrorMessage();
             }
 
