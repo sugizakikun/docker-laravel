@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Cognito\CognitoClient;
-use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use App\Http\Controllers\Controller;
+use App\Http\Services\Auth\SendResetLink;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 
 class ForgotPasswordController extends Controller
 {
@@ -22,26 +22,14 @@ class ForgotPasswordController extends Controller
     */
 
     use SendsPasswordResetEmails;
-
-    private $cognitoClient;
-
-    public function __construct(CognitoClient $cognitoClient)
-    {
-        $this->cognitoClient = $cognitoClient;
-    }
-
-    // つまりこのメソッドをCognito連携用に上書きすりゃいいってことか！！！！
-    // この時に ForgotPassword APIを呼び出せばいいてことだな？
-    // 参考リンク：https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_ForgotPassword.html
-    public function sendResetLinkEmail(Request $request){
+    public function sendResetLinkEmail(Request $request, SendResetLink $sendResetLink){
 
         $this->validateEmail($request);
         $email = $request->all()['email'];
 
-        $response = $this->cognitoClient->sendResetLink($email);
+        $response = $sendResetLink->execute($email);
 
-        if($response != Password::RESET_LINK_SENT)
-        {
+        if($response != Password::RESET_LINK_SENT) {
             return $this->sendResetLinkFailedResponse($request, $response);
         }
         else {
