@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Profile;
 
-use App\Http\Controllers\Controller;
-use App\Http\Services\DeleteProfile;
-use App\Http\Services\UpdateProfile;
+use App\Http\Services\Profile\UpdateProfile;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
@@ -35,27 +35,17 @@ class ProfileController extends Controller
      * @param Request $request
      * @param UpdateProfile $updateProfile
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function update(Request $request, UpdateProfile $updateProfile)
     {
-        if(array_key_exists("image", $request->all())){
-            $path = $request->file('image')->store('public/img');
+        $data = $request->all();
 
-            $updateProfile->execute($path);
-        }
+        $name = $data['name'];
+        $email = $data['email'];
 
-        // ページを更新します
-        return redirect('/profile');
-    }
+        $updateProfile->execute($name, $email);
 
-    /**
-     * @param DeleteProfile $deleteProfile
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */
-    public function destroy(DeleteProfile $deleteProfile)
-    {
-        $deleteProfile->execute();
-        // ページを更新します
         return redirect('/profile');
     }
 }

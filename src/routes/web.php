@@ -28,6 +28,7 @@ Route::get('/home', "App\Http\Controllers\HomeController@index")->name('home');
 
 Route::group(['namespace' => 'App\Http\Controllers\Profile'], function () {
     Route::get('/profile', "ProfileController@index")->name('profile');
+    Route::put('/profile', "ProfileController@update")->name('profile.edit');
 
     Route::put('/profile_image', "ProfileImageController@update")->name('profile_image.edit');
     Route::delete('/profile_image', "ProfileImageController@destroy")->name('profile_image.delete');
