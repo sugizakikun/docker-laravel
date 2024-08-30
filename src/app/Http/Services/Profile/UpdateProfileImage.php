@@ -27,7 +27,7 @@ class UpdateProfileImage
         $user->profile_image_key = $fileName;
         $user->save();
 
-        if($oldProfileImageKey !== $fileName) {
+        if($oldProfileImageKey &&  $oldProfileImageKey !== $fileName) {
             $this->deleteUploadedImage($oldProfileImageKey);
         }
 
