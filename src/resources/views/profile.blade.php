@@ -18,8 +18,8 @@
                             Edit
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <button class="dropdown-item" data-toggle="modal" data-target="#updateProfileImageModal" id="updateProfileImageButton">Upload Image</button>
-                            <button class="dropdown-item" data-toggle="modal" data-target="#removeProfileImageModal" id="removeProfileImageButton">Remove Image</button>
+                            <button class="dropdown-item" data-toggle="modal" data-target="#updateProfileImageModal" id="updateProfileImageDropdownItemButton">Upload Image</button>
+                            <button class="dropdown-item" data-toggle="modal" data-target="#removeProfileImageModal" id="removeProfileImageDropdownItemButton">Remove Image</button>
                         </div>
                     </div>
                 </div>
@@ -54,99 +54,68 @@
             </div>
 
             <!-- Modal(updateProfileImage) -->
-            <div class="modal fade" id="updateProfileImageModal" tabindex="-1" role="dialog" aria-labelledby="updateProfileImageModal" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <form method="POST" action="{{ route('profile_image.edit') }}" enctype="multipart/form-data">
-                            @csrf
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalCenterTitle">プロフィール画像の変更</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="_method" value="PUT">
-                                <input class="form-control" type="file" name="image" id="imageInput" aria-describedby="fileHelp" aria-required="true">
-                                <div id="fileHelp" class="form-text">許可されるファイル形式: JPG, PNG, GIF, WebP, AVIF (最大1MB)</div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
-                                <button type="submit" class="btn btn-primary" id="uploadProfileImageButton" disabled>アップロード</button>
-                            </div>
-                        </form>
-                    </div>
+            <x-form_action_modal
+                modalId="updateProfileImageModal"
+                submitButtonId="uploadProfileImageModalButton"
+                route="{{ route('profile_image.edit') }}"
+                title="プロフィール画像の変更"
+                buttonTitle="アップロード"
+                method="PUT"
+            >
+                <!-- モーダルのボディ部分 -->
+                <div class="modal-body">
+                    <input class="form-control" type="file" name="image" id="imageInput" aria-describedby="fileHelp" aria-required="true">
+                    <div id="fileHelp" class="form-text">許可されるファイル形式: JPG, PNG, GIF, WebP, AVIF (最大1MB)</div>
                 </div>
-            </div>
+            </x-form_action_modal>
 
             <!-- Modal(removeProfileImage) -->
-            <div class="modal fade" id="removeProfileImageModal" tabindex="-1" role="dialog" aria-labelledby="removeProfileImageModal" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <form method="POST" action="{{ route('profile_image.delete') }}" enctype="multipart/form-data">
-                            @csrf
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalCenterTitle">プロフィール画像の削除</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="_method" value="DELETE">
-                                プロフィール画像をリセットしてもよろしいですか？
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
-                                <button type="submit" class="btn btn-danger" id="removeProfileImageButton">リセットする</button>
-                            </div>
-                        </form>
+            <x-form_action_modal
+                modalId="removeProfileImageModal"
+                submitButtonId="removeProfileImageModalButton"
+                route="{{ route('profile_image.delete') }}"
+                title="プロフィール画像の削除"
+                buttonTitle="リセット"
+                method="DELETE"
+            >
+                <!-- モーダルのボディ部分 -->
+                <div class="modal-body">
+                    <p>プロフィール画像をリセットしてもよろしいですか？</p>
+                </div>
+            </x-form_action_modal>
+
+            <!-- Modal(deleteProfile) -->
+            <x-form_action_modal
+                modalId="deleteProfileModal"
+                submitButtonId="deleteProfileModalButton"
+                route="{{ route('profile.destroy') }}"
+                title="アカウントの削除"
+                buttonTitle="退会する"
+                method="DELETE"
+            >
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <div>
+                        This is extremely important.
                     </div>
                 </div>
-            </div>
-
-            <!-- Modal(deleteAccount) -->
-            <div class="modal fade" id="deleteProfileModal" tabindex="-1" role="dialog" aria-labelledby="deleteProfileModal" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <form method="POST" action="{{ route('profile.destroy') }}" enctype="multipart/form-data">
-                            @csrf
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalCenterTitle">アカウントの削除</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                <div>
-                                    This is extremely important.
-                                </div>
-                            </div>
-                            <div class="modal-body">
-                                <input type="hidden" name="_method" value="DELETE">
-                                本当に退会しますか？
-
-                                <hr>
-                                <div class="mb-3">
-                                    <label for="confirm-email" class="form-label">Your email:</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="confirm-email">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="confirm-phrase" class="form-label">To verify, "delete my account" type below:</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="confirm-phrase">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
-                                <button type="submit" class="btn btn-danger" id="deleteProfileButton" disabled>退会する</button>
-                            </div>
-                        </form>
+                <div class="modal-body">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <p>本当に退会しますか？</p>
+                    <hr>
+                    <div class="mb-3">
+                        <label for="confirm-email" class="form-label">Your email:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="confirm-email">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm-phrase" class="form-label">To verify, "delete my account" type below:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="confirm-phrase">
+                        </div>
                     </div>
                 </div>
-            </div>
+            </x-form_action_modal>
         </div>
     </div>
 </div>
@@ -154,37 +123,57 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const uploadProfileImageModalButton = document.getElementById('uploadProfileImageModalButton');
+        uploadProfileImageModalButton.disabled = true
+
         document.getElementById('imageInput').addEventListener('change', function() {
-            const uploadButton = document.getElementById('uploadProfileImageButton');
 
             if (this.files && this.files.length > 0) {
                 const file = this.files[0];
-                const maxSize = 1024 * 1024; // 10MB
+                const maxSize = 1024 * 1024; // 1MB
                 const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif'];
 
                 if (!allowedTypes.includes(file.type)) {
                     alert('許可されていないファイル形式です。JPG、PNG、GIF、WebP、AVIF形式のファイルを選択してください。');
-                    this.value = '';
+                    this.value = ''; // Clear the input
+                    uploadProfileImageModalButton.disabled = true; // Keep the button disabled
                     return;
                 }
 
                 if (file.size > maxSize) {
-                    alert('ファイルサイズが大きすぎます。10MB以下のファイルを選択してください。');
-                    this.value = '';
+                    alert('ファイルサイズが大きすぎます。1MB以下のファイルを選択してください。');
+                    this.value = ''; // Clear the input
+                    uploadProfileImageModalButton.disabled = true; // Keep the button disabled
                     return;
                 }
 
-                uploadButton.disabled = false;
+                uploadProfileImageModalButton.disabled = false; // Enable the button
             } else {
-                uploadButton.disabled = true;  // Keep the button disabled
+                uploadProfileImageModalButton.disabled = true; // Keep the button disabled
             }
         });
     });
 
     document.addEventListener('DOMContentLoaded', function () {
+        const profileImageUrl = "{{ auth()->user()->profile_image_url }}";
+
+        const removeProfileImageDropdownItemButton = document.getElementById("removeProfileImageDropdownItemButton");
+        const removeProfileImageModalButton = document.getElementById("removeProfileImageModalButton");
+
+        if (profileImageUrl) {
+            removeProfileImageDropdownItemButton.disabled = false;
+            removeProfileImageModalButton.disabled = false;
+        } else {
+            removeProfileImageDropdownItemButton.disabled = true;
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
         const emailInput = document.getElementById('confirm-email');
         const phraseInput = document.getElementById('confirm-phrase');
-        const deleteProfileButton = document.getElementById('deleteProfileButton');
+
+        const deleteProfileModalButton = document.getElementById('deleteProfileModalButton');
+        deleteProfileModalButton.disabled = true;
 
         // ユーザーのメールアドレスをサーバーから取得する（テンプレートエンジンで埋め込む）
         const userEmail = "{{ auth()->user()->email }}";
@@ -193,22 +182,12 @@
         function validateForm() {
             const isEmailCorrect = emailInput.value === userEmail;
             const isPhraseCorrect = phraseInput.value.toLowerCase() === confirmationPhrase;
-            
-            deleteProfileButton.disabled = !(isEmailCorrect && isPhraseCorrect);
+
+            deleteProfileModalButton.disabled = !(isEmailCorrect && isPhraseCorrect);
         }
 
         emailInput.addEventListener('input', validateForm);
         phraseInput.addEventListener('input', validateForm);
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const profileImageUrl = "{{ auth()->user()->profile_image_url }}";
-
-        if(profileImageUrl){
-            document.getElementById("removeProfileImageButton").disabled = false;
-        } else{
-            document.getElementById("removeProfileImageButton").disabled = true;
-        }
     });
 
 </script>
