@@ -1,12 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+
 @if(session('result'))
-    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
-        {{ session('result') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+    <x-alert :message="session('result')" color="success"/>
 @endif
+
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -25,8 +24,8 @@
                             Edit
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <button class="dropdown-item" data-toggle="modal" data-target="#updateProfileImage">Upload Image</button>
-                            <button class="dropdown-item" data-toggle="modal" data-target="#removeProfileImage">Remove Image</button>
+                            <button class="dropdown-item" data-toggle="modal" data-target="#updateProfileImage" id="updateProfileImageButton">Upload Image</button>
+                            <button class="dropdown-item" data-toggle="modal" data-target="#removeProfileImage" id="removeProfileImageButton">Remove Image</button>
                         </div>
                     </div>
                 </div>
@@ -207,14 +206,19 @@
         phraseInput.addEventListener('input', validateForm);
     });
 
+    document.addEventListener('DOMContentLoaded', function () {
+        const profileImageUrl = "{{ auth()->user()->profile_image_url }}";
+
+        if(profileImageUrl){
+            document.getElementById("removeProfileImageButton").disabled = false;
+        } else{
+            document.getElementById("removeProfileImageButton").disabled = true;
+        }
+    });
+
 </script>
 
 <style>
-    .alert{
-        margin-bottom: 0px !important;
-        border-radius: 0 !important;
-    }
-
     .thumbnail {
         object-fit: cover;
         border-radius: 50%;
