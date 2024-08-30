@@ -18,8 +18,8 @@
                             Edit
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <button class="dropdown-item" data-toggle="modal" data-target="#updateProfileImage" id="updateProfileImageButton">Upload Image</button>
-                            <button class="dropdown-item" data-toggle="modal" data-target="#removeProfileImage" id="removeProfileImageButton">Remove Image</button>
+                            <button class="dropdown-item" data-toggle="modal" data-target="#updateProfileImageModal" id="updateProfileImageButton">Upload Image</button>
+                            <button class="dropdown-item" data-toggle="modal" data-target="#removeProfileImageModal" id="removeProfileImageButton">Remove Image</button>
                         </div>
                     </div>
                 </div>
@@ -49,12 +49,12 @@
                 <h2 class="text-danger border-bottom">Delete Account</h2>
                 <div class="mb-3">
                     <p>Once you delete your account, there is no going back. Please be certain.</p>
-                    <button class="btn btn-danger" data-toggle="modal" data-target="#deleteAccount">Delete your account</button>
+                    <button class="btn btn-danger" data-toggle="modal" data-target="#deleteProfileModal">Delete your account</button>
                 </div>
             </div>
 
             <!-- Modal(updateProfileImage) -->
-            <div class="modal fade" id="updateProfileImage" tabindex="-1" role="dialog" aria-labelledby="updateProfileImage" aria-hidden="true">
+            <div class="modal fade" id="updateProfileImageModal" tabindex="-1" role="dialog" aria-labelledby="updateProfileImageModal" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <form method="POST" action="{{ route('profile_image.edit') }}" enctype="multipart/form-data">
@@ -72,7 +72,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
-                                <button type="submit" class="btn btn-primary" id="uploadButton" disabled>アップロード</button>
+                                <button type="submit" class="btn btn-primary" id="uploadProfileImageButton" disabled>アップロード</button>
                             </div>
                         </form>
                     </div>
@@ -80,7 +80,7 @@
             </div>
 
             <!-- Modal(removeProfileImage) -->
-            <div class="modal fade" id="removeProfileImage" tabindex="-1" role="dialog" aria-labelledby="removeProfileImage" aria-hidden="true">
+            <div class="modal fade" id="removeProfileImageModal" tabindex="-1" role="dialog" aria-labelledby="removeProfileImageModal" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <form method="POST" action="{{ route('profile_image.delete') }}" enctype="multipart/form-data">
@@ -97,7 +97,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
-                                <button type="submit" class="btn btn-danger" id="resetButton">リセットする</button>
+                                <button type="submit" class="btn btn-danger" id="removeProfileImageButton">リセットする</button>
                             </div>
                         </form>
                     </div>
@@ -105,7 +105,7 @@
             </div>
 
             <!-- Modal(deleteAccount) -->
-            <div class="modal fade" id="deleteAccount" tabindex="-1" role="dialog" aria-labelledby="deleteAccount" aria-hidden="true">
+            <div class="modal fade" id="deleteProfileModal" tabindex="-1" role="dialog" aria-labelledby="deleteProfileModal" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <form method="POST" action="{{ route('profile.destroy') }}" enctype="multipart/form-data">
@@ -141,7 +141,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
-                                <button type="submit" class="btn btn-danger" id="deleteAccountButton" disabled>退会する</button>
+                                <button type="submit" class="btn btn-danger" id="deleteProfileButton" disabled>退会する</button>
                             </div>
                         </form>
                     </div>
@@ -155,7 +155,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('imageInput').addEventListener('change', function() {
-            const uploadButton = document.getElementById('uploadButton');
+            const uploadButton = document.getElementById('uploadProfileImageButton');
 
             if (this.files && this.files.length > 0) {
                 const file = this.files[0];
@@ -184,7 +184,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const emailInput = document.getElementById('confirm-email');
         const phraseInput = document.getElementById('confirm-phrase');
-        const deleteButton = document.getElementById('deleteAccountButton');
+        const deleteProfileButton = document.getElementById('deleteProfileButton');
 
         // ユーザーのメールアドレスをサーバーから取得する（テンプレートエンジンで埋め込む）
         const userEmail = "{{ auth()->user()->email }}";
@@ -193,7 +193,8 @@
         function validateForm() {
             const isEmailCorrect = emailInput.value === userEmail;
             const isPhraseCorrect = phraseInput.value.toLowerCase() === confirmationPhrase;
-            deleteButton.disabled = !(isEmailCorrect && isPhraseCorrect);
+            
+            deleteProfileButton.disabled = !(isEmailCorrect && isPhraseCorrect);
         }
 
         emailInput.addEventListener('input', validateForm);
