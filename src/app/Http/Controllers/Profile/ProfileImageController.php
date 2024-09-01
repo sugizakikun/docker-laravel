@@ -32,10 +32,16 @@ class ProfileImageController extends Controller
         }
 
         $path = $request->file('image')->store('public/img');
-        $updateProfileImage->execute($path);
+        $nsfwScore = $updateProfileImage->execute($path);
 
-        // ページを更新します
-        return redirect('/profile')->with('result', '`Profile image uploaded successfully');
+        $resultMessage = $nsfwScore >= 0.8
+            ? 'Inappropriate image upload detected.'
+            : 'Profile image uploaded successfully.';
+
+        return redirect('/profile')->with([
+            'score' => $nsfwScore,
+            'result'=> $resultMessage
+        ]);
     }
 
     /**
