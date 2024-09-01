@@ -2,7 +2,7 @@
 
 namespace App\Http\Domains\Common;
 
-class NsfwOutputDomain
+class NsfwOutputResponseDomain
 {
     /**
      * @param float $score

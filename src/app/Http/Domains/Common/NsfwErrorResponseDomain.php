@@ -20,8 +20,8 @@ class NsfwErrorResponseDomain
     public function toArray(): array
     {
         return [
-            'errorCode' => $this->errorCode,
-            'errorMessage' => $this->errorMessage,
+            'code' => $this->errorCode,
+            'message' => $this->errorMessage,
             'url' => $this->url,
             'alertBgColor' => 'danger'
         ];
