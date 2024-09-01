@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
+use App\Http\Domains\Common\NsfwErrorResponseDomain;
+use App\Http\Domains\Common\NsfwOutputResponseDomain;
 use App\Http\Services\Profile\DeleteProfileImage;
 use App\Http\Services\Profile\UpdateProfileImage;
 use Illuminate\Http\Request;
@@ -22,8 +24,8 @@ class ProfileImageController extends Controller
 
     /**
      * @param Request $request
-     * @param UpdateProfileImage $updateProfile
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @param UpdateProfileImage $updateProfileImage
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|void|null
      */
     public function update(Request $request, UpdateProfileImage $updateProfileImage)
     {
@@ -32,16 +34,19 @@ class ProfileImageController extends Controller
         }
 
         $path = $request->file('image')->store('public/img');
-        $nsfwScore = $updateProfileImage->execute($path);
+        $response = $updateProfileImage->execute($path);
 
-        $resultMessage = $nsfwScore >= 0.8
-            ? 'Inappropriate image upload detected.'
-            : 'Profile image uploaded successfully.';
-
-        return redirect('/profile')->with([
-            'score' => $nsfwScore,
-            'result'=> $resultMessage
-        ]);
+        if($response instanceof NsfwOutputResponseDomain){
+            return redirect('/profile')->with([
+                'bgColor' => $response['alertBgColor'],
+                'result'=> $response['message']
+            ]);
+        } else if($response instanceof NsfwErrorResponseDomain){
+            return redirect('/profile')->with([
+                'bgColor' => $response['alertBgColor'],
+                'result' => $response['code'].':'. $response['message']
+            ]);
+        }
     }
 
     /**

@@ -5,6 +5,8 @@ namespace App\Http\Services\Profile;
 use App\Util\HttpClient;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Domains\Common\NsfwErrorResponseDomain;
+use App\Http\Domains\Common\NsfwOutputResponseDomain;
 
 class UpdateProfileImage
 {
@@ -20,9 +22,9 @@ class UpdateProfileImage
 
     /**
      * @param string|null $path
-     * @return float
+     * @return NsfwErrorResponseDomain|NsfwOutputResponseDomain
      */
-    public function execute(?string $path) :float
+    public function execute(?string $path)
     {
         $randomStr = base_convert(md5(uniqid()), 16,36);
         $fileName = $randomStr.'.png';
@@ -31,18 +33,27 @@ class UpdateProfileImage
         Storage::disk('s3')->put($fileName, $fileContents);
         $s3Path = Storage::disk('s3')->url($fileName);
 
-        $nsfwScore = $this->calculateNsfwScore($s3Path);
+        $nsfwApiResponse = $this->sendNsfwApiRequest($s3Path);
 
         # サーバーエラーの場合はアップロードされたS3オブジェクトを削除し早期リターン
-        if($nsfwScore === 999.999){
+        if(isset($nsfwApiResponse['error_code'])){
             $this->deleteUploadedImage($s3Path);
-            return $nsfwScore;
+
+            return new NsfwErrorResponseDomain(
+                $nsfwApiResponse['error_code'],
+                $nsfwApiResponse['error_message'],
+                $nsfwApiResponse['url']
+            );
         }
 
         # NSFWスコアが0.8以上の場合は早期リターン
-        if($nsfwScore >= 0.8 ){
+        if( $nsfwApiResponse['score'] >= 0.8 ){
             $this->deleteUploadedImage($s3Path);
-            return $nsfwScore;
+
+            return new NsfwOutputResponseDomain(
+                $nsfwApiResponse['score'],
+                $nsfwApiResponse['url']
+            );
         }
 
         # NSFWスコアが0.8未満の場合は、UserテーブルにオブジェクトへのURLとキーを保存
@@ -61,35 +72,32 @@ class UpdateProfileImage
         # S3への保存が成功したらWebサーバー上の一時ファイルを削除
         Storage::delete($path);
 
-        return $nsfwScore;
+        return new NsfwOutputResponseDomain(
+            $nsfwApiResponse['score'],
+            $nsfwApiResponse['url']
+        );
     }
 
 
     /**
-     * @param $s3Path
-     * @return float
+     * @param string $s3Path
+     * @return array
      */
-    public function calculateNsfwScore($s3Path) :float
+    public function sendNsfwApiRequest(string $s3Path) :array
     {
         $prefix = 'http://'.config('fargate.task_ip_address').':5000';
         $suffix = '/?url='. urlencode($s3Path);
         $endPoint = $prefix.$suffix;
 
         $jsonString = $this->httpClient->get($endPoint);
-        $jsonArray = json_decode($jsonString, true);
-
-        if(isset($jsonArray['error_code'])){
-            return 999.999;
-        }
-
-        return  $jsonArray['score'];
+        return  json_decode($jsonString, true);
     }
 
     /**
-     * @param $oldImageKey
+     * @param string $oldImageKey
      * @return void
      */
-    public function deleteUploadedImage($oldImageKey) :void
+    public function deleteUploadedImage(string $oldImageKey) :void
     {
         Storage::disk('s3')->delete($oldImageKey);
     }
