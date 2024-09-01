@@ -34,19 +34,17 @@ class ProfileImageController extends Controller
         }
 
         $path = $request->file('image')->store('public/img');
-        $response = $updateProfileImage->execute($path);
+        $nsfwResponse = $updateProfileImage->execute($path);
 
-        if($response instanceof NsfwOutputResponseDomain){
-            return redirect('/profile')->with([
-                'bgColor' => $response['alertBgColor'],
-                'result'=> $response['message']
-            ]);
-        } else if($response instanceof NsfwErrorResponseDomain){
-            return redirect('/profile')->with([
-                'bgColor' => $response['alertBgColor'],
-                'result' => $response['code'].':'. $response['message']
-            ]);
-        }
+        // NSFW応答の処理
+        $redirectData = [
+            'bgColor' => $nsfwResponse['alertBgColor'],
+            'result' => ($nsfwResponse instanceof NsfwErrorResponseDomain)
+                ? $nsfwResponse['code'] . ':' . $nsfwResponse['message']
+                : $nsfwResponse['message']
+        ];
+
+        return redirect('/profile')->with($redirectData);
     }
 
     /**
