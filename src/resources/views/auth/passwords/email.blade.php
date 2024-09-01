@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@if(session('status'))
+    <x-alert :message="session('status')" color="success"/>
+@endif
+
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -8,12 +12,6 @@
                 <div class="card-header">{{ __('Reset Password') }}</div>
 
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
                     <form method="POST" action="{{ route('password.email') }}">
                         @csrf
 
