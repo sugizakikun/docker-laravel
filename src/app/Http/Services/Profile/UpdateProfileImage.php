@@ -37,18 +37,18 @@ class UpdateProfileImage
 
         # サーバーエラーの場合はアップロードされたS3オブジェクトを削除し早期リターン
         if(isset($nsfwApiResponse['error_code'])){
-            $this->deleteUploadedImage($s3Path);
+            $this->deleteUploadedImage($fileName);
 
             return new NsfwErrorResponseDomain(
                 $nsfwApiResponse['error_code'],
-                $nsfwApiResponse['error_message'],
+                $nsfwApiResponse['error_reason'],
                 $nsfwApiResponse['url']
             );
         }
 
         # NSFWスコアが0.8以上の場合は早期リターン
         if( $nsfwApiResponse['score'] >= 0.8 ){
-            $this->deleteUploadedImage($s3Path);
+            $this->deleteUploadedImage($fileName);
 
             return new NsfwOutputResponseDomain(
                 $nsfwApiResponse['score'],
