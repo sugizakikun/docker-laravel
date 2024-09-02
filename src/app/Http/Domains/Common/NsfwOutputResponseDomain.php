@@ -32,7 +32,7 @@ class NsfwOutputResponseDomain
     private function getMessage() :string
     {
         if($this->score >= 0.8){
-            return '不適切な画像のアップロードが検知されました。。';
+            return '不適切な画像のアップロードが検知されました。';
         } elseif($this->score < 0.8 && $this->score >= 0.3) {
             return '画像のアップロードが完了しました。(※ただしサムネイルにぼかし処理が入ります。)';
         } else {

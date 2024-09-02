@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Profile;
 
+use App\Http\Domains\Common\NsfwOutputResponseDomain;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Domains\Common\NsfwErrorResponseDomain;
-use App\Http\Domains\Common\NsfwOutputResponseDomain;
 use App\Http\Services\Profile\DeleteProfileImage;
 use App\Http\Services\Profile\UpdateProfileImage;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ProfileImageController extends Controller
 {
@@ -34,14 +33,16 @@ class ProfileImageController extends Controller
         }
 
         $path = $request->file('image')->store('public/img');
+
         $nsfwResponse = $updateProfileImage->execute($path);
+        $nsfwResponseArray =  $nsfwResponse->toArray();
 
         // NSFW応答の処理
         $redirectData = [
-            'bgColor' => $nsfwResponse['alertBgColor'],
+            'bgColor' => $nsfwResponseArray['alertBgColor'],
             'result' => ($nsfwResponse instanceof NsfwErrorResponseDomain)
-                ? $nsfwResponse['code'] . ':' . $nsfwResponse['message']
-                : $nsfwResponse['message']
+                ? $nsfwResponseArray['code'] . ' error: ' . $nsfwResponseArray['message']
+                : $nsfwResponseArray['message']
         ];
 
         return redirect('/profile')->with($redirectData);
