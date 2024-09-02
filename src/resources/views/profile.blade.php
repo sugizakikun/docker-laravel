@@ -3,7 +3,7 @@
 @section('content')
 
 @if(session('result'))
-    <x-alert :message="session('result')" color="success"/>
+    <x-alert :message="session('result')" :color="session('bgColor') ?? 'success'"/>
 @endif
 
 <div class="container mt-4">
@@ -189,7 +189,6 @@
         emailInput.addEventListener('input', validateForm);
         phraseInput.addEventListener('input', validateForm);
     });
-
 </script>
 
 <style>
