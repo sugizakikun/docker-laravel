@@ -19,7 +19,18 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get("/register", "App\Http\Controllers\Auth\RegisterController@showRegistrationForm")->name('auth.register_form');
-Route::post("/register", "App\Http\Controllers\Auth\RegisterController@register")->name('auth.register');
+Route::group(['namespace' => 'App\Http\Controllers\Auth'], function () {
+    Route::get("/register", "RegisterController@showRegistrationForm")->name('auth.register_form');
+    Route::post("/register", "RegisterController@register")->name('auth.register');
+});
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', "App\Http\Controllers\HomeController@index")->name('home');
+
+Route::group(['namespace' => 'App\Http\Controllers\Profile'], function () {
+    Route::get('/profile', "ProfileController@index")->name('profile');
+    Route::put('/profile', "ProfileController@update")->name('profile.edit');
+    Route::delete('/profile', "ProfileController@destroy")->name('profile.destroy');
+
+    Route::put('/profile_image', "ProfileImageController@update")->name('profile_image.edit');
+    Route::delete('/profile_image', "ProfileImageController@destroy")->name('profile_image.delete');
+});

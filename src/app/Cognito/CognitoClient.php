@@ -18,6 +18,14 @@ class CognitoClient
     const EXPIRED_CODE           = 'ExpiredCodeException';
     const LIMIT_EXCEEDED         = 'LimitExceededException';
 
+    const TOO_MANY_REQUESTS_EXCEPTION = 'TooManyRequestsException';
+
+    const INTERNAL_ERROR         = 'InternalErrorException';
+
+    const ALIAS_EXISTS           = 'AliasExistsException';
+
+    const UPDATE_SUCCEED         = 'Update has been Successful!';
+
     /**
      * @var CognitoIdentityProviderClient
      */
@@ -146,19 +154,27 @@ class CognitoClient
                 'Username' => $username,
             ]);
         } catch (CognitoIdentityProviderException $e) {
-            if ($e->getAwsErrorCode() === self::USER_NOT_FOUND) {
+            $errorCode = $e->getAwsErrorCode();
+
+            if($errorCode=== self::USER_NOT_FOUND) {
                 return Password::INVALID_USER;
             }
 
-            if ($e->getAwsErrorCode() === self::INVALID_PASSWORD) {
-                return Lang::has('passwords.password') ? 'passwords.password' : $e->getAwsErrorMessage();
+            if($errorCode === self::INVALID_PASSWORD) {
+                return Lang::has('passwords.password')
+                    ? 'passwords.password'
+                    : $e->getAwsErrorMessage();
             }
 
-            if ($e->getAwsErrorCode() === self::CODE_MISMATCH) {
+            if($errorCode=== self::CODE_MISMATCH) {
                 return Password::INVALID_TOKEN;
             }
 
-            if($e->getAwsErrorCode() === self::EXPIRED_CODE || $e->getAwsErrorCode() === self::LIMIT_EXCEEDED) {
+            if($errorCode === self::LIMIT_EXCEEDED){
+                return Password::RESET_THROTTLED;
+            }
+
+            if($errorCode === self::EXPIRED_CODE ) {
                 return $e->getAwsErrorMessage();
             }
 
@@ -198,9 +214,8 @@ class CognitoClient
 
         } catch (CognitoIdentityProviderException $e) {
             $errorCode = $e->getAwsErrorCode();
-            $errorMessage = $e->getAwsErrorMessage();
 
-            if ($errorCode === 'LimitExceededException') {
+            if ($errorCode === self::LIMIT_EXCEEDED ) {
                 return Password::RESET_THROTTLED;
             }
 
@@ -208,6 +223,27 @@ class CognitoClient
         }
 
         return Password::RESET_LINK_SENT;
+    }
+
+    /**
+     * Destroy a user from cognito user pool.
+     *  @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminDeleteUser.html
+     *
+     * @param $username
+     * @return string|true|null
+     */
+    public function destroyUser($username)
+    {
+        try {
+            $result = $this->client->adminDeleteUser([
+                'Username' => $username,
+                'UserPoolId' => $this->poolId
+            ]);
+        } catch (CognitoIdentityProviderException $e) {
+            return false;
+        }
+
+        return true;
     }
 
     # HELPER FUNCTIONS
@@ -222,13 +258,17 @@ class CognitoClient
      */
     public function setUserAttributes($username, array $attributes)
     {
-        $response = $this->client->AdminUpdateUserAttributes([
-            'Username' => $username,
-            'UserPoolId' => $this->poolId,
-            'UserAttributes' => $this->formatAttributes($attributes),
-        ]);
+        try {
+            $response = $this->client->AdminUpdateUserAttributes([
+                'Username' => $username,
+                'UserPoolId' => $this->poolId,
+                'UserAttributes' => $this->formatAttributes($attributes),
+            ]);
+        } catch (CognitoIdentityProviderException $e) {
+            return $e->getAwsErrorMessage();
+        }
 
-        return true;
+        return self::UPDATE_SUCCEED;
     }
 
 
@@ -301,7 +341,8 @@ class CognitoClient
         return $userAttributes;
     }
 
-    private function formatKeyValue(array $userAttributes){
+    private function formatKeyValue(array $userAttributes)
+    {
         $attributes = [];
 
         foreach($userAttributes as $userAttribute){

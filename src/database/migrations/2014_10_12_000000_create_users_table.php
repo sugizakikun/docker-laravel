@@ -16,7 +16,10 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('cognito_username')->unique();
+            $table->string('name',20)->nullable();
             $table->string('email')->unique();
+            $table->text('profile_image_url')->nullable();
+            $table->text('profile_image_key')->nullable();
             $table->timestamps();
         });
     }
