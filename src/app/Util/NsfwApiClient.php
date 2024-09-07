@@ -12,7 +12,11 @@ class NsfwApiClient
         $this->prefix = 'http://'.config('fargate.task_ip_address').':5000';
     }
 
-    public function singlePredict(string $s3Path)
+    /**
+     * @param string $s3Path
+     * @return mixed
+     */
+    public function singlePrediction(string $s3Path)
     {
         $endPoint = $this->prefix
             .'/?url='
@@ -22,6 +26,10 @@ class NsfwApiClient
         return  json_decode($jsonString, true);
     }
 
+    /**
+     * @param array $s3Paths
+     * @return mixed
+     */
     public function batchPrediction(array $s3Paths)
     {
         $endPoint = $this->prefix .'/batch-classify';
@@ -30,6 +38,8 @@ class NsfwApiClient
         ];
 
         $jsonString = $this->httpClient->post($endPoint, $data);
-        return json_decode($jsonString, true);
+        $jsonData =  json_decode($jsonString, true);
+
+        return $jsonData['predictions'];
     }
 }
