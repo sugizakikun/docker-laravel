@@ -12,6 +12,14 @@ class CreatePost
 {
     use ImageUploaderTrait;
 
+    /**
+     * @var NsfwApiClient
+     */
+    protected $nsfwApiClient;
+
+    /**
+     * @param NsfwApiClient $nsfwApiClient
+     */
     public function __construct(NsfwApiClient $nsfwApiClient)
     {
         $this->nsfwApiClient = $nsfwApiClient;
