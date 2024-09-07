@@ -32,9 +32,9 @@ class PostController extends Controller
 
         $data = $request->all();
         $content = $data['content'];
-        $images = $request->file('images');
+        $uploadedFiles = $request->file('images');
 
-        $createPost->execute($userId, $content, $images);
+        $createPost->execute($userId, $content, $uploadedFiles);
 
         return redirect('home')->with(['result' => 'Post has been created successfully!']);
     }

@@ -32,9 +32,9 @@ class ProfileImageController extends Controller
             return null;
         }
 
-        $path = $request->file('image')->store('public/img');
+        $uploadedFile = $request->file('image');
 
-        $nsfwResponse = $updateProfileImage->execute($path);
+        $nsfwResponse = $updateProfileImage->execute($uploadedFile);
         $nsfwResponseArray =  $nsfwResponse->toArray();
 
         // NSFW応答の処理
