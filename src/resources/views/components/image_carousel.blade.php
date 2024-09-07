@@ -10,7 +10,7 @@
     <div class="carousel-inner">
         @foreach($images as $index => $image)
             <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                <img class="d-block w-100 thumbnail" src="{{asset('img/moving.png')}}" height="200" width="300">
+                <img class="d-block w-100 thumbnail {{$image->nsfw_score >= 0.3 ? 'blur' : ''}}" src="{{asset('img/moving.png')}}" height="200" width="300">
             </div>
         @endforeach
     </div>
@@ -23,4 +23,5 @@
         <span class="sr-only">Next</span>
     </a>
 </div>
+
 
