@@ -50,6 +50,10 @@
 @endsection
 
 <style>
+    .object-fit {
+        object-fit: cover;
+    }
+
     .thumbnail {
         object-fit: cover;
         border-radius: 50%;
