@@ -14,19 +14,16 @@ class CreatePost
         $this->nsfwApiClient = $nsfwApiClient;
     }
 
-    public function execute(int $userId, string $content, array $images)
+    public function execute(int $userId, string $content, array $uploadedFiles)
     {
         $post = $this->createPost($userId, $content);
 
-        if(count($images) > 0){
+        if(count($uploadedFiles) > 0){
             # Webサーバーに画像データを一時保管する
-            $files= $this->storeImages($images);
-
-            # Webサーバーに保存した画像データをS3にアップロードする
-            $s3Paths = $this->uploadImagesIntoS3($files);
+            $storeImageOutPuts = $this->batchStoreImages($uploadedFiles);
 
             # 複数の画像に対してnsfwスコアを付与する
-            $nsfwPredictions = $this->nsfwApiClient->batchPrediction($s3Paths);
+            $nsfwPredictions = $this->nsfwApiClient->batchPrediction($storeImageOutPuts );
 
             # nsfwの結果による画像の振り分けを行う
             $this->processPredictedImages($post->id, $nsfwPredictions);
@@ -48,45 +45,31 @@ class CreatePost
     }
 
     /**
-     * @param array $images
+     * @param array $uploadFiles
      * @return array
      */
-    private function storeImages(array $images):array
+    private function batchStoreImages(array $uploadedFiles):array
     {
         $files = [];
 
-        foreach ($images as $image) {
-            $randomStr = base_convert(md5(uniqid()), 16,36);
-            $ext = $image->guessExtension();
+        foreach ($uploadedFiles as $uploadedFile) {
+            $path = $uploadedFile->store('public/img');
+            $fileContents = Storage::get($path);
 
-            $filename = "$randomStr.$ext";
+            $randomStr = base_convert(md5(uniqid()), 16,36);
+            $ext = $uploadedFile->guessExtension();
+            $fileName = "$randomStr.$ext";
+
+            Storage::disk('s3')->put($fileName, $fileContents);
+
             $files[] = [
-                'name' => $filename,
-                'contents' =>  $image->storeAs('public/img', $filename)
+                'url'  => Storage::disk('s3')->url($fileName),
+                'key' => $fileName,
+                'local_path' => $path,
             ];
         }
 
         return $files;
-    }
-
-    /**
-     * @param array $files
-     * @return array
-     */
-    private function uploadImagesIntoS3(array $files):array
-    {
-        $s3Paths = [];
-
-        foreach ($files as $file) {
-            $fileContent = Storage::get($file['contents']);
-            Storage::disk('s3')->put($file['name'], $fileContent);
-            $s3Paths[] = [
-                'key'  => $file['name'],
-                'url' => Storage::disk('s3')->url($file['name'])
-            ];
-        }
-
-        return $s3Paths;
     }
 
     /**

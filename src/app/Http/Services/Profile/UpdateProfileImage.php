@@ -27,12 +27,12 @@ class UpdateProfileImage
     public function execute(UploadedFile $uploadedFile)
     {
         $storeImageOutput = $this->storeImage($uploadedFile);
-        $nsfwApiResponse = $this->nsfwApiClient->singlePrediction($storeImageOutput['s3_path']);
+        $nsfwApiResponse = $this->nsfwApiClient->singlePrediction($storeImageOutput['url']);
 
         # サーバーエラーの場合はアップロードされたS3オブジェクトを削除し早期リターン
         if(isset($nsfwApiResponse['error_code'])){
             Storage::delete($storeImageOutput['local_path']);
-            $this->deleteUploadedImage($storeImageOutput['file_name']);
+            $this->deleteUploadedImage($storeImageOutput['key']);
 
             return new NsfwErrorResponseDomain(
                 $nsfwApiResponse['error_code'],
@@ -44,7 +44,7 @@ class UpdateProfileImage
         # NSFWスコアが0.8以上の場合は早期リターン
         if( $nsfwApiResponse['score'] >= 0.8 ){
             Storage::delete($storeImageOutput['local_path']);
-            $this->deleteUploadedImage($storeImageOutput['file_name']);
+            $this->deleteUploadedImage($storeImageOutput['key']);
 
             return new NsfwOutputResponseDomain(
                 $nsfwApiResponse['score'],
@@ -56,12 +56,12 @@ class UpdateProfileImage
         $user = Auth::user();
         $oldProfileImageKey = $user->profile_image_key;
 
-        $user->profile_image_url = $storeImageOutput['s3_path'];
-        $user->profile_image_key = $storeImageOutput['file_name'];
+        $user->profile_image_url = $storeImageOutput['url'];
+        $user->profile_image_key = $storeImageOutput['key'];
         $user->save();
 
         # 更新前の画像はS3から削除
-        if($oldProfileImageKey &&  $oldProfileImageKey !== $storeImageOutput['file_name']) {
+        if($oldProfileImageKey &&  $oldProfileImageKey !== $storeImageOutput['key']) {
             $this->deleteUploadedImage($oldProfileImageKey);
         }
 
@@ -90,8 +90,8 @@ class UpdateProfileImage
         Storage::disk('s3')->put($fileName, $fileContents);
 
         return [
-            's3_path'  => Storage::disk('s3')->url($fileName),
-            'file_name' => $fileName,
+            'url'  => Storage::disk('s3')->url($fileName),
+            'key' => $fileName,
             'local_path' => $path,
         ];
     }
