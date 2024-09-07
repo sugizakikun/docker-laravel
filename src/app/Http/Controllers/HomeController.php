@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\Posts\GetPosts;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -21,8 +22,10 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(GetPosts $getPosts)
     {
-        return view('home');
+        $posts = $getPosts->execute();
+
+        return view('home')->with('posts', $posts);
     }
 }
