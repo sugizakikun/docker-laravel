@@ -27,6 +27,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth'], function () {
 Route::get('/home', "App\Http\Controllers\HomeController@index")->name('home');
 
 Route::group(['namespace' => 'App\Http\Controllers\Post'], function () {
+    Route::post('/posts', "PostController@create")->name('post.create');
     Route::put('/posts/{postId}', "PostController@update")->name('post.edit');
     Route::delete('/posts/{postId}', "PostController@destroy")->name('post.destroy');
 });
