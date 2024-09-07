@@ -3,12 +3,20 @@
 namespace App\Http\Services\Posts;
 
 use App\Models\Post;
+use App\Models\PostImage;
+use App\Util\NsfwApiClient;
 use Illuminate\Support\Facades\Storage;
 
 class CreatePost
 {
+    public function __construct(NsfwApiClient $nsfwApiClient)
+    {
+        $this->nsfwApiClient = $nsfwApiClient;
+    }
+
     public function execute(int $userId, string $content, array $images)
     {
+        $post = $this->createPost($userId, $content);
 
         if(count($images) > 0){
             # Webサーバーに画像データを一時保管する
@@ -17,21 +25,22 @@ class CreatePost
             # Webサーバーに保存した画像データをS3にアップロードする
             $s3Paths = $this->uploadImagesIntoS3($files);
 
-            
+            # 複数の画像に対してnsfwスコアを付与する
+            $nsfwPredictions = $this->nsfwApiClient->batchPrediction($s3Paths);
+
+            # nsfwの結果による画像の振り分けを行う
+            $this->processPredictedImages($post->id, $nsfwPredictions);
         }
-
-        $this->createPost($userId, $content);
-
     }
 
     /**
      * @param int $userId
      * @param string $content
-     * @return void
+     * @return Post
      */
-    private function createPost(int $userId, string $content):void
+    private function createPost(int $userId, string $content):Post
     {
-        (new Post)->newQuery()
+        return (new Post)->newQuery()
             ->create([
                 'author_id' => $userId,
                 'content' => $content
@@ -78,5 +87,44 @@ class CreatePost
         }
 
         return $s3Paths;
+    }
+
+    /**
+     * @param int $postId
+     * @param array $nsfwPredictions
+     * @return void
+     */
+    private function processPredictedImages(int $postId, array $nsfwPredictions):void
+    {
+        foreach ($nsfwPredictions as $prediction) {
+            if(isset($prediction['error_code'])) {
+                Storage::disk('s3')->delete($prediction['key']);
+                continue;
+            }
+
+            if($prediction['score'] > 0.8) {
+                Storage::disk('s3')->delete($prediction['key']);
+                continue;
+            }
+
+            $this->createPostImages($postId, $prediction);
+        }
+    }
+
+    /**
+     * @param int $postId
+     * @param array $image
+     * @return PostImage
+     */
+    private function createPostImages(int $postId, array $image): PostImage
+    {
+        return (new PostImage())
+            ->newQuery()
+            ->create([
+                'post_id' => $postId,
+                'image_url' => $image['url'],
+                'image_key' => $image['key'],
+                'nsfw_score' => $image['score']
+            ]);
     }
 }
