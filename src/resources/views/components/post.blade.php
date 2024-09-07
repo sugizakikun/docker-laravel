@@ -2,7 +2,7 @@
     <div class="card mb-4">
         <div class="card-header d-flex align-items-center">
             <x-profile_image :user="$post->author" size="40"></x-profile_image>
-            <span>{{$post->author->name}}</span>
+            <span class="mx-2">{{$post->author->name}}</span>
             <div class="dropdown ml-auto">
                 <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Edit
@@ -15,7 +15,7 @@
         </div>
 
         <div class="card-body" style="white-space: pre-wrap;">
-            {{ $post->content}}
+            {!! nl2br(e($post->content)) !!}
         </div>
 
         @if(count($post->postImages) > 0)
@@ -26,7 +26,7 @@
         @endif
     </div>
 
-    <!-- Modal(updateProfileImage) -->
+    <!-- Modal(updatePost) -->
     <x-form_action_modal
         modalId="editPostModal-{{$post->id}}"
         submitButtonId="editPostModalButton-{{$post->id}}"
@@ -35,14 +35,16 @@
         buttonTitle="編集"
         method="PUT"
     >
-        <!-- モーダルのボディ部分 -->
-        <textarea
-            class="form-control"
-            rows="10"
-            value="{{$post->content}}"
-            id="content-{{$post->id}}"
-            name="content"
-        ></textarea>
+        <div class="modal-body">
+            <!-- モーダルのボディ部分 -->
+            <textarea
+                class="form-control"
+                rows="10"
+                value="{{$post->content}}"
+                id="content-{{$post->id}}"
+                name="content"
+            ></textarea>
+        </div>
     </x-form_action_modal>
 
     <!-- Modal(deletePost) -->
