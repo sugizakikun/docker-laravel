@@ -6,9 +6,12 @@ use App\Models\Post;
 use App\Models\PostImage;
 use App\Util\NsfwApiClient;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Services\Common\ImageUploaderTrait;
 
 class CreatePost
 {
+    use ImageUploaderTrait;
+
     public function __construct(NsfwApiClient $nsfwApiClient)
     {
         $this->nsfwApiClient = $nsfwApiClient;
@@ -45,34 +48,6 @@ class CreatePost
     }
 
     /**
-     * @param array $uploadFiles
-     * @return array
-     */
-    private function batchStoreImages(array $uploadedFiles):array
-    {
-        $files = [];
-
-        foreach ($uploadedFiles as $uploadedFile) {
-            $path = $uploadedFile->store('public/img');
-            $fileContents = Storage::get($path);
-
-            $randomStr = base_convert(md5(uniqid()), 16,36);
-            $ext = $uploadedFile->guessExtension();
-            $fileName = "$randomStr.$ext";
-
-            Storage::disk('s3')->put($fileName, $fileContents);
-
-            $files[] = [
-                'url'  => Storage::disk('s3')->url($fileName),
-                'key' => $fileName,
-                'local_path' => $path,
-            ];
-        }
-
-        return $files;
-    }
-
-    /**
      * @param int $postId
      * @param array $nsfwPredictions
      * @return void
@@ -80,13 +55,15 @@ class CreatePost
     private function processPredictedImages(int $postId, array $nsfwPredictions):void
     {
         foreach ($nsfwPredictions as $prediction) {
+            Storage::delete($prediction['local_path']);
+
             if(isset($prediction['error_code'])) {
-                Storage::disk('s3')->delete($prediction['key']);
+                $this->deleteUploadedImage($prediction['key']);
                 continue;
             }
 
             if($prediction['score'] > 0.8) {
-                Storage::disk('s3')->delete($prediction['key']);
+                $this->deleteUploadedImage($prediction['key']);
                 continue;
             }
 
@@ -109,5 +86,6 @@ class CreatePost
                 'image_key' => $image['key'],
                 'nsfw_score' => $image['score']
             ]);
+
     }
 }

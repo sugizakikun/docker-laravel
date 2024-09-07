@@ -6,11 +6,14 @@ use App\Util\NsfwApiClient;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Services\Common\ImageUploaderTrait;
 use App\Http\Domains\Common\NsfwErrorResponseDomain;
 use App\Http\Domains\Common\NsfwOutputResponseDomain;
 
 class UpdateProfileImage
 {
+    use ImageUploaderTrait;
+
     /**
      * @var NsfwApiClient
      */
@@ -72,36 +75,5 @@ class UpdateProfileImage
             $nsfwApiResponse['score'],
             $nsfwApiResponse['url']
         );
-    }
-
-    /**
-     * @param UploadedFile $uploadedFile
-     * @return array
-     */
-    public function storeImage(UploadedFile $uploadedFile):array
-    {
-        $path = $uploadedFile->store('public/img');
-        $fileContents = Storage::get($path);
-
-        $randomStr = base_convert(md5(uniqid()), 16,36);
-        $ext = $uploadedFile->guessExtension();
-        $fileName = "$randomStr.$ext";
-
-        Storage::disk('s3')->put($fileName, $fileContents);
-
-        return [
-            'url'  => Storage::disk('s3')->url($fileName),
-            'key' => $fileName,
-            'local_path' => $path,
-        ];
-    }
-
-    /**
-     * @param string $oldImageKey
-     * @return void
-     */
-    public function deleteUploadedImage(string $oldImageKey) :void
-    {
-        Storage::disk('s3')->delete($oldImageKey);
     }
 }
