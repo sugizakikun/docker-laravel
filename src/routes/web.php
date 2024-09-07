@@ -26,6 +26,11 @@ Route::group(['namespace' => 'App\Http\Controllers\Auth'], function () {
 
 Route::get('/home', "App\Http\Controllers\HomeController@index")->name('home');
 
+Route::group(['namespace' => 'App\Http\Controllers\Post'], function () {
+    Route::put('/posts/{postId}', "PostController@update")->name('post.edit');
+    Route::delete('/posts/{postId}', "PostController@destroy")->name('post.destroy');
+});
+
 Route::group(['namespace' => 'App\Http\Controllers\Profile'], function () {
     Route::get('/profile', "ProfileController@index")->name('profile');
     Route::put('/profile', "ProfileController@update")->name('profile.edit');
