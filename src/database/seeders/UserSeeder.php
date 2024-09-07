@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Util\HttpClient;
 use App\Cognito\CognitoClient;
+use App\Util\Common\HttpClient;
 use Aws\CognitoIdentityProvider\CognitoIdentityProviderClient;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
