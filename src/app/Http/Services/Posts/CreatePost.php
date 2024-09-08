@@ -25,11 +25,11 @@ class CreatePost
         $this->nsfwApiClient = $nsfwApiClient;
     }
 
-    public function execute(int $userId, string $content, array $uploadedFiles)
+    public function execute(int $userId, string $content, ?array $uploadedFiles)
     {
         $post = $this->createPost($userId, $content);
 
-        if(count($uploadedFiles) > 0){
+        if($uploadedFiles){
             # Webサーバーに画像データを一時保管する
             $storeImageOutPuts = $this->batchStoreImages($uploadedFiles);
 
