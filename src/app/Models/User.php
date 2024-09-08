@@ -12,4 +12,28 @@ class User extends Authenticatable
     protected $fillable = [
         'cognito_username', 'email'
     ];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'author_id', 'id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'follows','following', 'followed');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function followed()
+    {
+        return $this->belongsToMany(User::class, 'follows','followed','following');
+    }
 }
