@@ -3,15 +3,18 @@
         <div class="card-header d-flex align-items-center">
             <x-profile_image :user="$post->author" size="40"></x-profile_image>
             <span class="mx-2">{{$post->author->name}}</span>
-            <div class="dropdown ml-auto">
-                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Edit
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <button class="dropdown-item" data-toggle="modal" data-target="#editPostModal-{{$post->id}}" id="editPostDropdownItemButton-{{$post->id}}">Edit Post</button>
-                    <button class="dropdown-item" data-toggle="modal" data-target="#deletePostModal-{{$post->id}}" id="deletePostModalDropdownItemButton-{{$post->id}}">Delete Post</button>
+
+            @if($post->author->id === $authUser->id)
+                <div class="dropdown ml-auto">
+                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Edit
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <button class="dropdown-item" data-toggle="modal" data-target="#editPostModal-{{$post->id}}" id="editPostDropdownItemButton-{{$post->id}}">Edit Post</button>
+                        <button class="dropdown-item" data-toggle="modal" data-target="#deletePostModal-{{$post->id}}" id="deletePostModalDropdownItemButton-{{$post->id}}">Delete Post</button>
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
 
         <div class="card-body" style="white-space: pre-wrap;">
