@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Services\User\GetUser;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -19,7 +20,8 @@ class UserController extends Controller
 
     public function show($userId, GetUser $getUser)
     {
-        $user = $getUser->execute($userId);
+        $authUserId = Auth::id();
+        $user = $getUser->execute($userId, $authUserId);
 
         return view('user.show')->with('user', $user);
     }
