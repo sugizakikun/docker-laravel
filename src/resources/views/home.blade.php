@@ -10,7 +10,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             @foreach($posts as $post)
-                <x-post :post="$post"></x-post>
+                <x-post :post="$post" :authUser="auth()->user()"></x-post>
             @endforeach
         </div>
     </div>

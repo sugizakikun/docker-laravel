@@ -40,3 +40,10 @@ Route::group(['namespace' => 'App\Http\Controllers\Profile'], function () {
     Route::put('/profile_image', "ProfileImageController@update")->name('profile_image.edit');
     Route::delete('/profile_image', "ProfileImageController@destroy")->name('profile_image.delete');
 });
+
+Route::group(['namespace' => 'App\Http\Controllers\User'], function () {
+    Route::get('/user/{userId}', "UserController@show")->name('user.show');
+
+    Route::put('/user/{userId}/follow', "FollowController@create")->name('follow');
+    Route::delete('/user/{userId}/follow', "FollowController@destroy")->name('unfollow');
+});
