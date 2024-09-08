@@ -1,13 +1,24 @@
 @extends('layouts.app')
 
 @section('content')
+    <!--アラート-->
+    @if(session('result'))
+        <x-alert :message="session('result')" :color="session('bgColor') ?? 'success'"/>
+    @endif
+
     <!--プロフィール-->
     <div class="profile py-3">
         <x-profile_image :user="$user" size=150 />
         <p class="profile--name">{{$user->name}}</p>
 
         @if(auth()->user()->id != $user->id)
-            <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#followUserModal">follow</button>
+            <div class="follow--btn">
+                @if(!$user->isFollowing)
+                    <button class="btn btn-primary mb-2" id="#followUserButton" data-toggle="modal" data-target="#followUserModal">follow</button>
+                @else
+                    <button class="btn btn-outline-primary mb-2" id="#unfollowUserButton" data-toggle="modal" data-target="#unfollowUserModal">following</button>
+                @endif
+            </div>
         @endif
     </div>
 
@@ -22,17 +33,31 @@
         </div>
     </div>
 
-    <!-- Modal(follow) -->
+    <!-- Modal(フォロー) -->
     <x-form_action_modal
         modalId="followUserModal"
         submitButtonId="#followUserModalButton"
-        route="{{ route('post.edit', ['postId' => $post->id]) }}"
+        route="{{ route('follow', ['userId' => $user->id]) }}"
         title="フォロー"
-        buttonTitle="編集"
-        method="POST"
+        buttonTitle="フォローする"
+        method="PUT"
     >
         <div class="modal-body">
             {{$user->name}} さんをフォローしますか？
+        </div>
+    </x-form_action_modal>
+
+    <!-- Modal(フォロー解除) -->
+    <x-form_action_modal
+        modalId="unfollowUserModal"
+        submitButtonId="#unfollowUserModalButton"
+        route="{{ route('follow', ['userId' => $user->id]) }}"
+        title="フォロー解除"
+        buttonTitle="解除する"
+        method="DELETE"
+    >
+        <div class="modal-body">
+            {{$user->name}} さんのフォローを解除しますか？
         </div>
     </x-form_action_modal>
 @endsection

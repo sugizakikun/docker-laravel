@@ -43,4 +43,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Profile'], function () {
 
 Route::group(['namespace' => 'App\Http\Controllers\User'], function () {
     Route::get('/user/{userId}', "UserController@show")->name('user.show');
+
+    Route::put('/user/{userId}/follow', "FollowController@create")->name('follow');
+    Route::delete('/user/{userId}/follow', "FollowController@destroy")->name('unfollow');
 });
