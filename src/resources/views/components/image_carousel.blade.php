@@ -10,18 +10,22 @@
     <div class="carousel-inner">
         @foreach($images as $index => $image)
             <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                <img class="d-block w-100 object-fit {{$image->nsfw_score >= 0.3 ? 'blur' : ''}}" src="{{$image->image_url}}" height="200" width="300">
+                <a href="{{$image->image_url}}">
+                    <img class="d-block w-100 object-fit {{$image->nsfw_score >= 0.3 ? 'blur' : ''}}" src="{{$image->image_url}}" height="300">
+                </a>
             </div>
         @endforeach
     </div>
-    <a class="carousel-control-prev" href="#carouselIndicators-{{$postId}}" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#carouselIndicators-{{$postId}}" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-    </a>
+    @if(count($images) > 1)
+        <a class="carousel-control-prev" href="#carouselIndicators-{{$postId}}" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselIndicators-{{$postId}}" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    @endif
 </div>
 
 
