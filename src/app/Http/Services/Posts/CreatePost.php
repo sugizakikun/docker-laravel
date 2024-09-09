@@ -4,13 +4,22 @@ namespace App\Http\Services\Posts;
 
 use App\Models\Post;
 use App\Models\PostImage;
+use App\Util\GooLabApiClient;
 use App\Util\NsfwApiClient;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Services\Common\NgWordMaskingTrait;
 use App\Http\Services\Common\ImageUploaderTrait;
 
 class CreatePost
 {
+    use NgWordMaskingTrait;
+
     use ImageUploaderTrait;
+
+    /**
+     * @var GooLabApiClient
+     */
+    protected $gooApiClient;
 
     /**
      * @var NsfwApiClient
@@ -18,10 +27,14 @@ class CreatePost
     protected $nsfwApiClient;
 
     /**
+     * @param GooLabApiClient $gooApiClient
      * @param NsfwApiClient $nsfwApiClient
      */
-    public function __construct(NsfwApiClient $nsfwApiClient)
+    public function __construct(
+        GooLabApiClient $gooApiClient,
+        NsfwApiClient $nsfwApiClient)
     {
+        $this->gooApiClient = $gooApiClient;
         $this->nsfwApiClient = $nsfwApiClient;
     }
 
@@ -48,10 +61,13 @@ class CreatePost
      */
     private function createPost(int $userId, string $content):Post
     {
+        $formattedWordList = $this->gooApiClient->morph($content);
+        $maskedSentence = $this->maskingProcess($formattedWordList);
+
         return (new Post)->newQuery()
             ->create([
                 'author_id' => $userId,
-                'content' => $content
+                'content' => $maskedSentence
             ]);
     }
 

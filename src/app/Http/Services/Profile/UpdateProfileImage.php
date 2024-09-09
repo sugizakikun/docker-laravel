@@ -7,8 +7,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Services\Common\ImageUploaderTrait;
-use App\Http\Domains\Common\NsfwErrorResponseDomain;
-use App\Http\Domains\Common\NsfwOutputResponseDomain;
+use App\Http\Domains\NsfwApi\NsfwErrorResponseDomain;
+use App\Http\Domains\NsfwApi\NsfwOutputResponseDomain;
 
 class UpdateProfileImage
 {

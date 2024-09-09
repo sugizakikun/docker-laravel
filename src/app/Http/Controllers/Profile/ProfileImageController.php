@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Profile;
 
-use App\Http\Domains\Common\NsfwOutputResponseDomain;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Domains\Common\NsfwErrorResponseDomain;
+use App\Http\Domains\NsfwApi\NsfwErrorResponseDomain;
+use App\Http\Domains\NsfwApi\NsfwOutputResponseDomain;
 use App\Http\Services\Profile\DeleteProfileImage;
 use App\Http\Services\Profile\UpdateProfileImage;
 
