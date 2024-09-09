@@ -26,10 +26,14 @@ class UpdatePost
     public function execute(int $postId, string $content)
     {
         $formattedWordList = $this->gooApiClient->morph($content);
-        $maskedSentence = $this->maskingProcess($formattedWordList);
+        $ngWordMaskingOutput  = $this->maskingProcess($formattedWordList);
 
         (new Post())
             ->where('id', $postId)
-            ->update(['content' => $maskedSentence]);
+            ->update([
+                'content' => $ngWordMaskingOutput['result']
+            ]);
+
+        return $ngWordMaskingOutput['hasNgWord'];
     }
 }

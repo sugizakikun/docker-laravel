@@ -40,7 +40,10 @@ class CreatePost
 
     public function execute(int $userId, string $content, ?array $uploadedFiles)
     {
-        $post = $this->createPost($userId, $content);
+        $formattedWordList = $this->gooApiClient->morph($content);
+        $ngWordMaskingOutput = $this->maskingProcess($formattedWordList);
+
+        $post = $this->createPost($userId, $ngWordMaskingOutput['result']);
 
         if($uploadedFiles){
             # Webサーバーに画像データを一時保管する
@@ -52,6 +55,8 @@ class CreatePost
             # nsfwの結果による画像の振り分けを行う
             $this->processPredictedImages($post->id, $nsfwPredictions);
         }
+
+        return $ngWordMaskingOutput['hasNgWord'];
     }
 
     /**
@@ -61,13 +66,10 @@ class CreatePost
      */
     private function createPost(int $userId, string $content):Post
     {
-        $formattedWordList = $this->gooApiClient->morph($content);
-        $maskedSentence = $this->maskingProcess($formattedWordList);
-
         return (new Post)->newQuery()
             ->create([
                 'author_id' => $userId,
-                'content' => $maskedSentence
+                'content' => $content
             ]);
     }
 
