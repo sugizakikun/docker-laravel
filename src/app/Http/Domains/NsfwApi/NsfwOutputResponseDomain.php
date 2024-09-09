@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Domains\Common;
+namespace App\Http\Domains\NsfwApi;
 
 class NsfwOutputResponseDomain
 {
