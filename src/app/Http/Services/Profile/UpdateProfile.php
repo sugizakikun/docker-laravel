@@ -3,15 +3,31 @@
 namespace App\Http\Services\Profile;
 
 use App\Cognito\CognitoClient;
+use App\Http\Services\Common\NgWordMaskingTrait;
+use App\Util\GooLabApiClient;
 use Illuminate\Support\Facades\Auth;
 
 class UpdateProfile
 {
+    use NgWordMaskingTrait;
+
+    /**
+     * @var GooLabApiClient
+     */
+    protected $gooApiClient;
+
+    /**
+     * @var CognitoClient
+     */
     private $cognitoClient;
 
-    public function __construct(CognitoClient $cognitoClient)
+    public function __construct(
+        CognitoClient $cognitoClient,
+        GooLabApiClient $gooApiClient
+    )
     {
         $this->cognitoClient = $cognitoClient;
+        $this->gooApiClient = $gooApiClient;
     }
 
     /**
@@ -35,7 +51,11 @@ class UpdateProfile
             }
         }
 
-        $user->name = $name;
+        $formattedWordList = $this->gooApiClient->morph($name);
+        $maskedSentence = $this->maskingProcess($formattedWordList);
+
+
+        $user->name = $maskedSentence;
         $user->save();
 
         return $result;
