@@ -52,10 +52,9 @@ class UpdateProfile
         }
 
         $formattedWordList = $this->gooApiClient->morph($name);
-        $maskedSentence = $this->maskingProcess($formattedWordList);
+        $ngWordMaskingOutput = $this->maskingProcess($formattedWordList);
 
-
-        $user->name = $maskedSentence;
+        $user->name = $ngWordMaskingOutput['result'];
         $user->save();
 
         return $result;

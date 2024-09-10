@@ -34,9 +34,14 @@ class PostController extends Controller
         $content = $data['content'];
         $uploadedFiles = $request->file('images');
 
-        $createPost->execute($userId, $content, $uploadedFiles);
+        $hasNgWord = $createPost->execute($userId, $content, $uploadedFiles);
 
-        return redirect('home')->with(['result' => 'Post has been created successfully!']);
+        return  !$hasNgWord
+            ? redirect('home')->with(['result' => 'つぶやきを投稿しました！'])
+            : redirect('home')->with([
+                'result' => '不適切な言葉が含まれていたため、一部をマスキングして投稿しました。',
+                'bgColor' => 'warning'
+            ]);
     }
 
     /**
@@ -50,9 +55,14 @@ class PostController extends Controller
         $data = $request->all();
         $content = $data['content'];
 
-        $updatePost->execute((int)$postId, $content);
+        $hasNgWord = $updatePost->execute((int)$postId, $content);
 
-        return redirect('home')->with(['result' => 'Post has been edited successfully!']);
+        return  !$hasNgWord
+            ? redirect('home')->with(['result' => 'つぶやきを更新しました！'])
+            : redirect('home')->with([
+                'result' => '不適切な言葉が含まれていたため、一部をマスキングして投稿しました。',
+                'bgColor' => 'warning'
+            ]);
     }
 
     /**
@@ -64,6 +74,6 @@ class PostController extends Controller
     {
         $deletePost->execute((int)$postId);
 
-        return redirect('home')->with(['result' => 'Post has been deleted successfully!']);
+        return redirect('home')->with(['result' => 'つぶやきが削除されました！']);
     }
 }

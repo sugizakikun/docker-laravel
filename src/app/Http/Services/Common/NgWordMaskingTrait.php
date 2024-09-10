@@ -3,11 +3,9 @@
 namespace App\Http\Services\Common;
 
 trait NgWordMaskingTrait {
-    /**
-     * @param array $formattedWordList
-     * @return string
-     */
-    public function maskingProcess(array $formattedWordList):string
+
+
+    public function maskingProcess(array $formattedWordList): array
     {
         # ニコニコ動画NGワード一覧から抜粋
         $ngWords = [
@@ -27,16 +25,21 @@ trait NgWordMaskingTrait {
         ];
 
         $maskedSentence = '';
+        $hasNgWord = false; #NGワード存在フラグ
 
         foreach ($formattedWordList as $formattedWord) {
             if(in_array($formattedWord['notation'], $ngWords) ||  in_array($formattedWord['kana'], $ngWords)) {
                 $maskedSentence = $maskedSentence.'☆☆☆';
+                $hasNgWord = true;
                 continue;
             }
 
             $maskedSentence = $maskedSentence.$formattedWord['notation'];
         }
 
-        return $maskedSentence;
+        return [
+            'result' => $maskedSentence,
+            'hasNgWord' => $hasNgWord,
+        ];
     }
 }
