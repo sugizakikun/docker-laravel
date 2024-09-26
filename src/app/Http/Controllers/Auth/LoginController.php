@@ -42,7 +42,8 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    public function showLoginForm(CreateGoogleAuthUrl $createGoogleAuthUrl) {
+    public function showLoginForm(CreateGoogleAuthUrl $createGoogleAuthUrl) 
+    {
         $authUrl = $createGoogleAuthUrl->execute();
 
         return view("auth.login")->with(['authUrl' => $authUrl ]);

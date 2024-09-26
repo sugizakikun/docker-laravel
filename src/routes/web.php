@@ -19,12 +19,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::group(['namespace' => 'App\Http\Controllers\Auth'], function () {
-    Route::get("/register", "RegisterController@showRegistrationForm")->name('auth.register_form');
-    Route::post("/register", "RegisterController@register")->name('auth.register');
-});
-
 Route::get('/home', "App\Http\Controllers\HomeController@index")->name('home');
+Route::get('/auth', "App\Http\Controllers\GoogleAUthController@index")->name('a');
 
 Route::group(['namespace' => 'App\Http\Controllers\Post'], function () {
     Route::post('/posts', "PostController@create")->name('post.create');

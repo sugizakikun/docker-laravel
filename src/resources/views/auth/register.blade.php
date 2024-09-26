@@ -8,7 +8,7 @@
                     <div class="card-header">新規登録</div>
 
                     <div class="card-body">
-                        <form method="POST" action="{{ route('auth.register') }}">
+                        <form method="POST" action="{{ action('App\Http\Controllers\Auth\RegisterController@register')}}">
                             @csrf
 
                             <div class="form-group row">
