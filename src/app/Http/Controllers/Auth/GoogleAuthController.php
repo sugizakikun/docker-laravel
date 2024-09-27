@@ -32,7 +32,6 @@ class GoogleAuthController extends Controller
         }
 
         $getUserInfoResponse = $this->googleAuthClient->getUserInfo($getTokenResponse);
-        dd($getUserInfoResponse);
     }
 
     private function redirectToLogin($errorMessage)
