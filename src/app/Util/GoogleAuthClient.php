@@ -15,6 +15,17 @@ class GoogleAuthClient
         $this->cognitoDomain = 'https://'. config('cognito.domain_name').'.auth.'.config('cognito.region').'.amazoncognito.com';
     }
 
+    public function getAuthUrl()
+    {
+        return $this->cognitoDomain.
+            "/oauth2/authorize".
+            "?identity_provider=Google".
+            "&redirect_uri=".$this->redirectUrl.
+            "&response_type=CODE".
+            "&client_id=".$this->appClientId.
+            "&scope=email openid";
+    }
+
     public function getToken(string $code)
     {
         $endPoint = $this->cognitoDomain . "/oauth2/token";

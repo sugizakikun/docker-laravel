@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\Controller;
-use App\Http\Services\Auth\CreateGoogleAuthUrl;
 use App\Providers\RouteServiceProvider;
 use Aws\CognitoIdentityProvider\Exception\CognitoIdentityProviderException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -40,13 +39,6 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
-    }
-
-    public function showLoginForm(CreateGoogleAuthUrl $createGoogleAuthUrl) 
-    {
-        $authUrl = $createGoogleAuthUrl->execute();
-
-        return view("auth.login")->with(['authUrl' => $authUrl ]);
     }
 
     public function login(Request $request)
