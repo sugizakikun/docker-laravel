@@ -6,15 +6,17 @@ class HttpClient
 {
     /**
      * @param string $url
-     * @param array $headers
+     * @param srting $headers
      * @return false|string
      */
-    public static function get(string $url)
-    {
+    public static function get(
+        string $url, 
+        string $header = 'Content-type: application/json; charset=UTF-8'
+    ){
         $options = [
             'http' => [
                 'method'=> 'GET',
-                'header'=> 'Content-type: application/json; charset=UTF-8'
+                'header'=> $header
             ]
         ];
 
@@ -25,17 +27,26 @@ class HttpClient
     /**
      * @param string $url
      * @param array $data
+     * @param string $header
+     * @param bool $isJson
      * @return false|string
      */
-    public static function post(string $url, array $data)
-    {
+    public static function post(
+        string $url, 
+        array $data, 
+        string $header = 'Content-type: application/json; charset=UTF-8',
+        bool $isJson = true
+    ){
+        $content = $isJson 
+            ? json_encode($data)
+            : http_build_query($data);
+
         // ストリームコンテキストオプションの設定
         $options = [
             'http' => [
                 'method'  => 'POST',
-                'header'  => "Content-Type: application/json;" .
-                    "charset=UTF-8",
-                'content' => json_encode($data), // JSONエンコードされたデータを送信
+                'header'  => $header,
+                'content' => $content, // データを送信
                 'ignore_errors' => true // エラーを無視してレスポンスを取得する
             ]
         ];

@@ -19,8 +19,9 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::get('/auth/google', "App\Http\Controllers\GoogleAuthController@handleOAuthCallback")->name('auth.google');
+
 Route::get('/home', "App\Http\Controllers\HomeController@index")->name('home');
-Route::get('/auth', "App\Http\Controllers\GoogleAUthController@index")->name('a');
 
 Route::group(['namespace' => 'App\Http\Controllers\Post'], function () {
     Route::post('/posts', "PostController@create")->name('post.create');
