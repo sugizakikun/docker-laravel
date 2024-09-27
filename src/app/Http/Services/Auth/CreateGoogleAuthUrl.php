@@ -10,7 +10,7 @@ class CreateGoogleAuthUrl
             '{domain_name}' => config('cognito.domain_name'),
             '{region}' => config('cognito.region'),
             '{client_id}' => config('cognito.app_client_id'),
-            '{redirect_url}' => 'http://localhost:8080/home'
+            '{redirect_url}' => config('cognito.redirect_url')
         ];
 
         return str_replace(array_keys($params), array_values($params), config('cognito.google_auth_url') );
