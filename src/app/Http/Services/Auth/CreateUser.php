@@ -34,7 +34,7 @@ class CreateUser
         );
 
         // Laravel側の新規登録
-        $user = $this->create($data, $username);
+        $user = $this->store($data, $username);
         event(new Registered($user));
 
         DB::commit();
@@ -45,7 +45,7 @@ class CreateUser
      * @param $username
      * @return mixed
      */
-    protected function create(array $data, $username)
+    public function store(array $data, $username)
     {
         return User::create([
             'cognito_username' => $username,

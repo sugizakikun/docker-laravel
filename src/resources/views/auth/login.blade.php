@@ -67,7 +67,7 @@
                     </form>
 
                     <div class="mb-3 justify-content-center">
-                        <a class="btn btn-danger col-12" href="{{$authUrl}}">
+                        <a class="btn btn-danger col-12" href="{{ route('auth.google') }}">
                             <i class="fab fa-google"></i>
                             Googleアカウントでログイン
                         </a>

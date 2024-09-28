@@ -19,10 +19,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::group(['namespace' => 'App\Http\Controllers\Auth'], function () {
-    Route::get("/register", "RegisterController@showRegistrationForm")->name('auth.register_form');
-    Route::post("/register", "RegisterController@register")->name('auth.register');
-});
+Route::get('/auth/google', "App\Http\Controllers\Auth\GoogleAuthController@redirectToGoogle")->name('auth.google');
+Route::get('/auth/google/callback', "App\Http\Controllers\Auth\GoogleAuthController@handleOAuthCallback")->name('auth.google.callback');
 
 Route::get('/home', "App\Http\Controllers\HomeController@index")->name('home');
 
