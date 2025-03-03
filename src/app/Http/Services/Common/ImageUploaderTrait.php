@@ -2,6 +2,7 @@
 
 namespace App\Http\Services\Common;
 
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
@@ -9,9 +10,9 @@ trait ImageUploaderTrait
 {
     /**
      * @param UploadedFile $uploadedFile
-     * @return array
+     * @param User $user
      */
-    public function storeImage(UploadedFile $uploadedFile):array
+    public function storeImage(UploadedFile $uploadedFile, User $user):array
     {
         $path = $uploadedFile->store('public/img');
         $fileContents = Storage::get($path);
@@ -20,12 +21,21 @@ trait ImageUploaderTrait
         $ext = $uploadedFile->guessExtension();
         $fileName = "$randomStr.$ext";
 
-        Storage::disk('s3')->put($fileName, $fileContents);
+        // メタデータの追加
+        $params = [
+            'Metadata' => [
+                'user_id' => $user->id, 
+                'user_name' => $user->name
+            ]
+        ];  
 
+        Storage::disk('s3')->put($fileName, $fileContents, $params);
+        
         return [
             'url'  => Storage::disk('s3')->url($fileName),
             'key' => $fileName,
             'local_path' => $path,
+            'file_contents' => $fileContents
         ];
     }
 
