@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Profile;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Domains\NsfwApi\NsfwErrorResponseDomain;
 use App\Http\Domains\NsfwApi\NsfwOutputResponseDomain;
 use App\Http\Services\Profile\DeleteProfileImage;
@@ -32,9 +33,10 @@ class ProfileImageController extends Controller
             return null;
         }
 
+        $user = Auth::user();
         $uploadedFile = $request->file('image');
 
-        $nsfwResponse = $updateProfileImage->execute($uploadedFile);
+        $nsfwResponse = $updateProfileImage->execute($uploadedFile, $user);
         $nsfwResponseArray =  $nsfwResponse->toArray();
 
         // NSFW応答の処理
