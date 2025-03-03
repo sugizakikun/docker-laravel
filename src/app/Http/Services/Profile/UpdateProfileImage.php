@@ -2,6 +2,7 @@
 
 namespace App\Http\Services\Profile;
 
+use App\Models\User;
 use App\Util\NsfwApiClient;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
@@ -27,14 +28,16 @@ class UpdateProfileImage
         $this->nsfwApiClient = $nsfwApiClient;
     }
 
-    public function execute(UploadedFile $uploadedFile)
+    public function execute(UploadedFile $uploadedFile, User $user)
     {
-        $storeImageOutput = $this->storeImage($uploadedFile);
+        $storeImageOutput = $this->storeImage($uploadedFile, $user);
         $nsfwApiResponse = $this->nsfwApiClient->singlePrediction($storeImageOutput['url']);
+
+        #Webサーバー上の一時ファイルを削除
+        Storage::delete($storeImageOutput['local_path']);
 
         # サーバーエラーの場合はアップロードされたS3オブジェクトを削除し早期リターン
         if(isset($nsfwApiResponse['error_code'])){
-            Storage::delete($storeImageOutput['local_path']);
             $this->deleteUploadedImage($storeImageOutput['key']);
 
             return new NsfwErrorResponseDomain(
@@ -44,11 +47,14 @@ class UpdateProfileImage
             );
         }
 
-        # NSFWスコアが0.8以上の場合は早期リターン
+        # NSFWスコアが0.8以上の場合はタグを付与した上で早期リターン
         if( $nsfwApiResponse['score'] >= 0.8 ){
-            Storage::delete($storeImageOutput['local_path']);
-            $this->deleteUploadedImage($storeImageOutput['key']);
-
+            Storage::disk('s3')->put(
+                $storeImageOutput['key'], 
+                $storeImageOutput['file_contents'], 
+                ['Tagging' => ['is_erotic'=>'1']] 
+            );
+            
             return new NsfwOutputResponseDomain(
                 $nsfwApiResponse['score'],
                 $nsfwApiResponse['url']
@@ -67,9 +73,6 @@ class UpdateProfileImage
         if($oldProfileImageKey &&  $oldProfileImageKey !== $storeImageOutput['key']) {
             $this->deleteUploadedImage($oldProfileImageKey);
         }
-
-        # S3への保存が成功したらWebサーバー上の一時ファイルを削除
-        Storage::delete($storeImageOutput['local_path']);
 
         return new NsfwOutputResponseDomain(
             $nsfwApiResponse['score'],
